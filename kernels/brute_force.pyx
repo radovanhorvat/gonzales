@@ -10,7 +10,22 @@ ctypedef np.float64_t DTYPE_t
 
 
 # ---------------------------------------------------
-# Kernels
+# C++ kernel
+# ---------------------------------------------------
+
+cdef extern from "brute_force.h" namespace "bfcpp":
+    double* accs_bf(double* points, double* masses, int n, double G, double eps)
+
+
+cdef calculate_accs_pp_cpp_wrap(DTYPE_t [:, :] r, DTYPE_t [:] m, double G, double eps):
+    cdef int n = r.shape[0]
+    cdef double* accs = accs_bf(&r[0, 0], &m[0], n, G, eps)
+    ret = np.asarray(<DTYPE_t[:n, :3]> accs)
+    return ret
+
+
+# ---------------------------------------------------
+# Cython kernel
 # ---------------------------------------------------
 
 @cython.boundscheck(False)
@@ -60,7 +75,13 @@ cdef calculate_accs_pp(DTYPE_t [:, :] r, DTYPE_t[:] m, double G, double eps):
 # Wrappers
 # ---------------------------------------------------
 
+# wrapper for Cython kernel
 @timing
 def calculate_accs_pp_wrap(r, m, G, eps):
     return calculate_accs_pp(r, m, G, eps)
 
+
+# wrapper for C++ kernel
+@timing
+def calc_accs_pp_cpp_wrap(r, m, G, eps):
+    return calculate_accs_pp_cpp_wrap(r, m, G, eps)

@@ -1,7 +1,6 @@
 import numpy as np
 
 from simulator.space import Space
-from simulator.utils import timing
 from kernels.brute_force import calculate_accs_pp_wrap
 from kernels.octree import calc_accs_octree
 
