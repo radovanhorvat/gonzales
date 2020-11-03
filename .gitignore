@@ -1,0 +1,10 @@
+.idea
+*.pyc
+
+nbvenv/
+
+build/
+kernels/*.pyd
+kernels/*.c
+kernels/*.cpp
+
