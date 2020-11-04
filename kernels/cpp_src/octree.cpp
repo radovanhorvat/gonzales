@@ -115,8 +115,8 @@ void Octree::calculate_accs_st() {
 void Octree::calculate_accs_st_parallel() {
     int n_cores = omp_get_max_threads();
     int chunk_size = n / n_cores;
-    # pragma omp parallel for
-    for (int k = 0; k < n_cores; ++k) {
+    # pragma omp parallel num_threads(n_cores)
+    {
         int tid, start_ind, end_ind, vec_size;
         tid = omp_get_thread_num();
         start_ind = tid * chunk_size;
