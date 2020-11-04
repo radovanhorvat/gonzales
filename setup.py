@@ -17,6 +17,8 @@ extensions = [Extension("brute_force", sources=[os.path.join('kernels', 'brute_f
                                            os.path.join('kernels', 'cpp_src', 'octnode.cpp'),
                                            os.path.join('kernels', 'cpp_src', 'octree.cpp')],
                         include_dirs=['kernels', os.path.join('kernels', 'cpp_src'), np.get_include()],
+                        extra_compile_args=['/openmp'],
+                        extra_link_args=['/openmp'],
                         language="c++"),
               ]
 

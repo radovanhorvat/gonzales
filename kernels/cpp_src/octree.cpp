@@ -1,5 +1,6 @@
 #pragma once
 #include <math.h>
+#include <omp.h>
 #include "octree.h"
 
 namespace octree {
@@ -109,6 +110,23 @@ void Octree::calculate_accs_st() {
     for (int i = 0; i < indices.size(); ++i)
         indices[i] = i;
     traverse_tree_st(root_node, indices);
+}
+
+void Octree::calculate_accs_st_parallel() {
+    int n_cores = omp_get_max_threads();
+    int chunk_size = n / n_cores;
+    # pragma omp parallel for
+    for (int k = 0; k < n_cores; ++k) {
+        int tid, start_ind, end_ind, vec_size;
+        tid = omp_get_thread_num();
+        start_ind = tid * chunk_size;
+        end_ind = (tid < n_cores - 1) ? (tid + 1) * chunk_size : n;
+        vec_size = end_ind - start_ind;
+        std::vector<int> indices(vec_size);
+        for (int i = 0; i < indices.size(); ++i)
+            indices[i] = start_ind + i;
+        traverse_tree_st(root_node, indices);
+    }
 }
 
 void Octree::traverse_tree_st(OctNode* nd, std::vector<int>& indices) {

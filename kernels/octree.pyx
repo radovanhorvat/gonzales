@@ -15,6 +15,7 @@ cdef extern from "octree.h" namespace "octree":
         void build()
         void calculate_accs()
         void calculate_accs_st()
+        void calculate_accs_st_parallel()
         double a_x, a_y, a_z
         int num_nodes, num_leaves, n
         double* accs
@@ -47,6 +48,9 @@ cdef class CPPOctree:
     cdef void calculate_accs_st(self):
         self._thisptr.calculate_accs_st()
 
+    cdef void calculate_accs_st_parallel(self):
+        self._thisptr.calculate_accs_st_parallel()
+
 
 cdef CPPOctree build_tree(double w, double x, double y, double z, DTYPE_t [:, :] r, DTYPE_t [:] m, double G, double eps, double theta):
     cdef CPPOctree tree
@@ -58,7 +62,8 @@ cdef CPPOctree build_tree(double w, double x, double y, double z, DTYPE_t [:, :]
 
 cdef calc_accs(CPPOctree tree):
     #tree.calculate_accs()
-    tree.calculate_accs_st()
+    #tree.calculate_accs_st()
+    tree.calculate_accs_st_parallel()
     return tree.accs()
 
 

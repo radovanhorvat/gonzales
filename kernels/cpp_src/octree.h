@@ -27,6 +27,7 @@ class Octree {
         void build();
 		void calculate_accs();
 		void calculate_accs_st();
+		void calculate_accs_st_parallel();
 
 		void insert_particle(OctNode* nd, double r_x, double r_y, double r_z, double mass);
 		void traverse_tree(OctNode* nd, double r_x, double r_y, double r_z, double mass, int j);
