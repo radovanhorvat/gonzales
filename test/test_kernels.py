@@ -88,4 +88,4 @@ def test_barnes_hut_theta_non_zero():
         accs2 = calculate_accs_pp_wrap(space.r, space.m, G, eps)
         accs3 = calc_accs_octree(cube_length, 0., 0., 0., space.r, space.m, G, eps, theta)
         err, std_err = calculate_relative_error(accs3, accs2)
-        assert err < 0.01 and std_err < 0.01
+        assert err < 0.02 and std_err < 0.02
