@@ -20,6 +20,10 @@ extensions = [Extension("brute_force", sources=[os.path.join('kernels', 'brute_f
                         extra_compile_args=['/openmp'],
                         extra_link_args=['/openmp'],
                         language="c++"),
+              Extension("numeric", sources=[os.path.join('kernels', 'numeric.pyx')],
+                        extra_compile_args=['/openmp'],
+                        extra_link_args=['/openmp'],
+                        include_dirs=['kernels', np.get_include()]),
               ]
 
 
