@@ -4,3 +4,4 @@ pytest
 PyQt5
 pyqtgraph
 pyopengl
+h5py
