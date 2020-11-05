@@ -1,4 +1,5 @@
 import os
+import logging
 import time
 import h5py
 import numpy as np
@@ -6,6 +7,9 @@ import numpy as np
 import kernels.brute_force as kernbf
 from simulator.utils import ProgressBar
 from simulator.space import Space
+
+
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 
 
 class SimulationBase:
@@ -31,6 +35,16 @@ class SimulationBase:
         """
         for k, v in kwargs.items():
             hdf5_obj[k] = v
+
+    def set_initial_data(self, hdf5_obj, n_steps, step_size):
+        info_grp = hdf5_obj.create_group('simulation_info')
+        output_grp = hdf5_obj.create_group('simulation_output')
+        self.set_metadata(info_grp, number_of_steps=n_steps, time_step_size=step_size, G=self.G, epsilon=self.eps,
+                          start_time=time.time(), number_of_particles=len(self.space), simulation_type=self.type)
+        pos_data = output_grp.create_dataset('positions', (n_steps + 1, *self.space.r.shape))
+        vel_data = output_grp.create_dataset('velocities', (n_steps + 1, *self.space.v.shape))
+        pos_data[0, :] = self.space.r
+        vel_data[0, :] = self.space.v
 
     def set_kernel(self, kernel_func):
         """
@@ -68,20 +82,16 @@ class PPSimulation(SimulationBase):
     def run(self, n_steps, step_size):
         # reset Progress bar
         self._pb.reset(n_steps)
+        logging.info('Start simulation - type={}, N_particles={}, N_steps={}'.format(self.type, len(self.space),
+                                                                                     n_steps))
         with h5py.File(self.output_filepath, 'w') as f:
             # set initial hdf5 data
-            info_grp = f.create_group('simulation_info')
-            output_grp = f.create_group('simulation_output')
-            self.set_metadata(info_grp, number_of_steps=n_steps, time_step_size=step_size, G=self.G, epsilon=self.eps,
-                              start_time=time.time(), number_of_particles=len(self.space), simulation_type=self.type)
-            pos_data = output_grp.create_dataset('positions', (n_steps + 1, *self.space.r.shape))
-            vel_data = output_grp.create_dataset('velocities', (n_steps + 1, *self.space.v.shape))
-            pos_data[0, :] = self.space.r
-            vel_data[0, :] = self.space.v
+            self.set_initial_data(f, n_steps, step_size)
             # integration
             for i in range(1, n_steps + 1):
                 self._pb.update()
-            info_grp.attrs['end_time'] = time.time()
+            #info_grp.attrs['end_time'] = time.time()
+        logging.info('End simulation')
 
 
 if __name__ == '__main__':

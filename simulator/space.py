@@ -23,7 +23,19 @@ class Space:
         self.v = np.vstack((self.v, v))
         self.m = np.append(self.m, m)
 
-    @timing
+    def add_particles(self, r, v, m):
+        """
+        Adds N particles, specified by position and velocity matrices, and by mass vector.
+
+        :param r: N x 3 numpy array, position vectors of the particles
+        :param v: N x 3 numpy array, velocity vectors of the particles
+        :param m: N x 1 numpy array, mass vector
+        """
+        self.r = np.vstack((self.r, r))
+        self.v = np.vstack((self.v, v))
+        self.m = np.append(self.m, m)
+
+    #@timing
     def add_cuboid(self, n, center, l_x, l_y, l_z, v_func, m_func):
         """
         Generates uniform random particle distribution within a cuboid volume
@@ -45,7 +57,7 @@ class Space:
         self.v = np.vstack((self.v, v))
         self.m = np.append(self.m, np.apply_along_axis(m_func, 1, self.r))
 
-    @timing
+    #@timing
     def add_sphere(self, n, center, radius, v_func, m_func):
         """
         Generates uniform random particle distribution within a spherical volume
@@ -70,7 +82,7 @@ class Space:
         self.m = np.append(
             self.m, np.apply_along_axis(m_func, 1, r_spherical))
 
-    @timing
+    #@timing
     def add_cylinder(self, n, center, radius, l_z, v_func, m_func):
         """
         Generates uniform random particle distribution within a cylindrical
