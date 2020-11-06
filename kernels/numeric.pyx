@@ -3,8 +3,11 @@ cimport numpy as np
 import numpy as np
 from libc.math cimport sqrt
 from cython.parallel import prange
-from simulator.utils import timing
 cimport openmp
+
+from simulator.utils import timing
+import kernels.brute_force as kernbf
+
 
 ctypedef np.float64_t DTYPE_t
 
@@ -38,6 +41,17 @@ def calc_pe_old(pos_vec, mass_vec, epsilon, G=6.67e-11):
 @timing
 def calc_ke_old(vel_vec, mass_vec):
     return 0.5 * (vel_vec ** 2).sum(axis=1) @ mass_vec
+
+@timing
+def advance_pp_old(space, time_step, accelerations, mass_vec, G, epsilon):
+    """
+        Updates particle positions and velocities based on 2nd order Leapfrog method
+    """
+    space.r += space.v * time_step + 0.5 * accelerations * time_step ** 2
+    new_accelerations = kernbf.calculate_accs_pp_wrap(space.r, mass_vec, G, epsilon)
+    space.v += 0.5 * (accelerations + new_accelerations) * time_step
+    return new_accelerations
+
 
 # -------- new stuff
 
@@ -100,6 +114,38 @@ cdef calc_pe(DTYPE_t [:, :] r, DTYPE_t [:] m, double G, double eps):
     return - G * pe
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cdef calc_te(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m, double G, double eps):
+    """
+        Calculates total energy.
+    """
+    cdef double te
+    te = calc_pe(r, m, G, eps) + calc_ke(v, m)
+    return te
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cdef advance_pp(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m, DTYPE_t [:, :] accs, double dt, double G, double eps):
+    """
+        Updates particle positions and velocities based on 2nd order Leapfrog method
+    """
+    cdef int n = accs.shape[0]
+    cdef int k = accs.shape[1]
+    cdef int i
+    cdef DTYPE_t [:, :] new_accs
+
+    for i in range(n):
+        r[i, 0] +=  v[i, 0] * dt + 0.5 * accs[i, 0] * dt * dt
+        r[i, 1] +=  v[i, 1] * dt + 0.5 * accs[i, 1] * dt * dt
+        r[i, 2] +=  v[i, 2] * dt + 0.5 * accs[i, 2] * dt * dt
+    new_accs = kernbf.calculate_accs_pp_wrap(r, m, G, eps)
+    for i in range(n):
+        v[i, 0] +=  0.5 * (accs[i, 0] + new_accs[i, 0]) * dt
+    return new_accs
+
+
 # ---------------------------------------------------
 # Wrappers
 # ---------------------------------------------------
@@ -117,3 +163,13 @@ def calc_ke_wrap(v, m):
 @timing
 def calc_pe_wrap(r, m, G, eps):
     return calc_pe(r, m, G, eps)
+
+
+@timing
+def calc_te_wrap(r, v, m, G, eps):
+    return calc_te(r, v, m, G, eps)
+
+
+#@timing
+def advance_pp_wrap(r, v, m, accs, dt, G, eps):
+    return advance_pp(r, v, m, accs, dt, G, eps)

@@ -5,6 +5,7 @@ import h5py
 import numpy as np
 
 import kernels.brute_force as kernbf
+import kernels.numeric as kernum
 from simulator.utils import ProgressBar
 from simulator.space import Space
 
@@ -37,12 +38,15 @@ class SimulationBase:
             hdf5_obj[k] = v
 
     def set_initial_data(self, hdf5_obj, n_steps, step_size):
-        info_grp = hdf5_obj.create_group('simulation_info')
-        output_grp = hdf5_obj.create_group('simulation_output')
+        """
+            Creates basic hdf5 structure and sets some initial data.
+        """
+        info_grp = hdf5_obj.create_group('info')
         self.set_metadata(info_grp, number_of_steps=n_steps, time_step_size=step_size, G=self.G, epsilon=self.eps,
                           start_time=time.time(), number_of_particles=len(self.space), simulation_type=self.type)
-        pos_data = output_grp.create_dataset('positions', (n_steps + 1, *self.space.r.shape))
-        vel_data = output_grp.create_dataset('velocities', (n_steps + 1, *self.space.v.shape))
+        results_grp = hdf5_obj.create_group('results')
+        pos_data = results_grp.create_dataset('positions', (n_steps + 1, *self.space.r.shape))
+        vel_data = results_grp.create_dataset('velocities', (n_steps + 1, *self.space.v.shape))
         pos_data[0, :] = self.space.r
         vel_data[0, :] = self.space.v
 
@@ -84,13 +88,20 @@ class PPSimulation(SimulationBase):
         self._pb.reset(n_steps)
         logging.info('Start simulation - type={}, N_particles={}, N_steps={}'.format(self.type, len(self.space),
                                                                                      n_steps))
-        with h5py.File(self.output_filepath, 'w') as f:
+        with h5py.File(self.output_filepath, 'w') as res_f:
             # set initial hdf5 data
-            self.set_initial_data(f, n_steps, step_size)
+            self.set_initial_data(res_f, n_steps, step_size)
+            # calculate initial accelerations
+            accs = self._kernel(self.space.r, self.space.m, self.G, self.eps)
             # integration
             for i in range(1, n_steps + 1):
+                new_accs = kernum.advance_pp_wrap(space.r, space.v, space.m, accs, step_size, self.G, self.eps)
+                accs = new_accs
+                # update hdf5 data
+                res_f['results/positions'][i, :] = self.space.r
+                res_f['results/velocities'][i, :] = self.space.v
                 self._pb.update()
-            #info_grp.attrs['end_time'] = time.time()
+            res_f['info']['end_time'] = time.time()
         logging.info('End simulation')
 
 
@@ -102,7 +113,7 @@ if __name__ == '__main__':
     def mass_func(pos_vec):
         return 1.0
 
-    n = 100
+    n = 10
     cube_length = 1.0
     G = 1.0
     eps = 1.0e-3
@@ -113,4 +124,25 @@ if __name__ == '__main__':
 
     ofp = os.path.normpath(r'D:\Python_Projects\results\test02.hdf5')
     sim = PPSimulation(space, ofp, 1.0, 1.0e-3)
-    sim.run(100, 0.001)
+    sim.run(10, 0.01)
+
+    # x = sim.view_result_group('simulation_output/positions')
+    # print(x[1])
+    with h5py.File(sim.output_filepath, 'r') as f:
+        info = f['info']
+        for k, v in info.items():
+            print(k, info[k][()])
+        #print(f['simulation_info'].values())
+        #print(f['simulation_output/positions'][2])
+
+
+    # result comparsion
+    # with h5py.File(bh_sim.output_filepath, 'r') as bh, h5py.File(pp_sim.output_filepath, 'r') as pp:
+    #     pos_data_pp = pp['simulation_output/positions']
+    #     pos_data_bh = bh['simulation_output/positions']
+    #     vel_data_pp = pp['simulation_output/velocities']
+    #     vel_data_bh = bh['simulation_output/velocities']
+    #     for k in range(n_steps + 1):
+    #         print("step: ", k)
+    #         print(np.max(np.abs(np.array(pos_data_bh[k]) - np.array(pos_data_pp[k]))))
+    #         print(np.max(np.abs(np.array(vel_data_bh[k]) - np.array(vel_data_pp[k]))))

@@ -76,7 +76,7 @@ cdef calculate_accs_pp(DTYPE_t [:, :] r, DTYPE_t[:] m, double G, double eps):
 # ---------------------------------------------------
 
 # wrapper for Cython kernel
-@timing
+#@timing
 def calculate_accs_pp_wrap(r, m, G, eps):
     return calculate_accs_pp(r, m, G, eps)
 
