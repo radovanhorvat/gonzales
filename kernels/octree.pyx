@@ -56,7 +56,7 @@ cdef CPPOctree build_tree(double w, double x, double y, double z, DTYPE_t [:, :]
     cdef CPPOctree tree
     tree = CPPOctree(x, y, z, w, G, eps, theta, r, m, r.shape[0])
     tree.build()
-    print(tree.info())
+    #print(tree.info())
     return tree
 
 
@@ -71,6 +71,8 @@ cdef calc_accs(CPPOctree tree):
 # Wrappers
 # ---------------------------------------------------
 
+# for timing:
+
 @timing
 def build_tree_wrap(w, x, y, z, r, m, G, eps, theta):
     return build_tree(w, x, y, z, r, m, G, eps, theta)
@@ -83,3 +85,9 @@ def calc_accs_wrap(tree):
 def calc_accs_octree(w, x, y, z, r, m, G, eps, theta):
     tree = build_tree_wrap(w, x, y, z, r, m, G, eps, theta)
     return calc_accs_wrap(tree)
+
+# for simulation:
+
+def calc_accs_octree_wrap(w, x, y, z, r, m, G, eps, theta):
+    tree = build_tree(w, x, y, z, r, m, G, eps, theta)
+    return calc_accs(tree)

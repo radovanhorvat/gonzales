@@ -22,9 +22,11 @@ Octree::Octree(double x, double y, double z, double w, double u_G, double u_eps,
 	theta = u_theta;
 }
 
+
 Octree::~Octree() {
     delete root_node;
 }
+
 
 void Octree::insert_particle(OctNode* nd, double r_x, double r_y, double r_z, double mass) {
     if (nd->is_empty == true) {

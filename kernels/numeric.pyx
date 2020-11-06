@@ -125,25 +125,53 @@ cdef calc_te(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m, double G, double
     return te
 
 
+#@cython.boundscheck(False)
+#@cython.wraparound(False)
+#cdef advance_pp(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m, DTYPE_t [:, :] accs, double dt, double G, double eps):
+#    """
+#        updates particle positions and velocities based on 2nd order Leapfrog method
+#    """
+#    cdef int n = accs.shape[0]
+#    cdef int k = accs.shape[1]
+#    cdef int i
+#    cdef DTYPE_t [:, :] new_accs
+#
+#    for i in range(n):
+#        r[i, 0] +=  v[i, 0] * dt + 0.5 * accs[i, 0] * dt * dt
+#        r[i, 1] +=  v[i, 1] * dt + 0.5 * accs[i, 1] * dt * dt
+#        r[i, 2] +=  v[i, 2] * dt + 0.5 * accs[i, 2] * dt * dt
+#    new_accs = kernbf.calculate_accs_pp_wrap(r, m, G, eps)
+#    for i in range(n):
+#        v[i, 0] +=  0.5 * (accs[i, 0] + new_accs[i, 0]) * dt
+#    return new_accs
+
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef advance_pp(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m, DTYPE_t [:, :] accs, double dt, double G, double eps):
+cdef advance_r(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:, :] accs, double dt):
     """
-        Updates particle positions and velocities based on 2nd order Leapfrog method
+        Updates positions for time step dt.
     """
     cdef int n = accs.shape[0]
-    cdef int k = accs.shape[1]
     cdef int i
-    cdef DTYPE_t [:, :] new_accs
 
     for i in range(n):
         r[i, 0] +=  v[i, 0] * dt + 0.5 * accs[i, 0] * dt * dt
         r[i, 1] +=  v[i, 1] * dt + 0.5 * accs[i, 1] * dt * dt
         r[i, 2] +=  v[i, 2] * dt + 0.5 * accs[i, 2] * dt * dt
-    new_accs = kernbf.calculate_accs_pp_wrap(r, m, G, eps)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cdef advance_v(DTYPE_t [:, :] v, DTYPE_t [:, :] accs, DTYPE_t [:, :] new_accs, double dt):
+    """
+        Updates velocities for time step dt.
+    """
+    cdef int n = accs.shape[0]
+    cdef int i
+
     for i in range(n):
         v[i, 0] +=  0.5 * (accs[i, 0] + new_accs[i, 0]) * dt
-    return new_accs
 
 
 # ---------------------------------------------------
@@ -170,6 +198,14 @@ def calc_te_wrap(r, v, m, G, eps):
     return calc_te(r, v, m, G, eps)
 
 
-#@timing
-def advance_pp_wrap(r, v, m, accs, dt, G, eps):
-    return advance_pp(r, v, m, accs, dt, G, eps)
+##@timing
+#def advance_pp_wrap(r, v, m, accs, dt, G, eps):
+#    return advance_pp(r, v, m, accs, dt, G, eps)
+
+
+def advance_r_wrap(r, v, accs, dt):
+    advance_r(r, v, accs, dt)
+
+
+def advance_v_wrap(v, accs, new_accs, dt):
+    advance_v(v, accs, new_accs, dt)

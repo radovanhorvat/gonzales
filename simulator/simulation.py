@@ -5,6 +5,7 @@ import h5py
 import numpy as np
 
 import kernels.brute_force as kernbf
+import kernels.octree as kernoct
 import kernels.numeric as kernum
 from simulator.utils import ProgressBar
 from simulator.space import Space
@@ -59,16 +60,31 @@ class SimulationBase:
         """
         self._kernel = kernel_func
 
-    def run(self, n_steps, step_size):
-        """
-            Runs the simulation for given number of steps and step size. Saves the results to the specified
-            output_filepath.
-
-        :param n_steps: number of simulation steps
-        :param step_size: simulation step size
-        :return:
-        """
+    def calc_accs(self):
         raise NotImplementedError
+
+    def run(self, n_steps, step_size):
+        # reset Progress bar
+        self._pb.reset(n_steps)
+        logging.info('Start simulation - type={}, N_particles={}, N_steps={}'.format(self.type, len(self.space),
+                                                                                     n_steps))
+        with h5py.File(self.output_filepath, 'w') as res_f:
+            # set initial hdf5 data
+            self.set_initial_data(res_f, n_steps, step_size)
+            # calculate initial accelerations
+            accs = self.calc_accs()
+            # integration
+            for i in range(1, n_steps + 1):
+                kernum.advance_r_wrap(self.space.r, self.space.v, accs, step_size)
+                new_accs = self.calc_accs()
+                kernum.advance_v_wrap(self.space.v, accs, new_accs, step_size)
+                accs = new_accs
+                # update hdf5 data
+                res_f['results/positions'][i, :] = self.space.r
+                res_f['results/velocities'][i, :] = self.space.v
+                self._pb.update()
+            res_f['info']['end_time'] = time.time()
+        logging.info('End simulation')
 
 
 class PPSimulation(SimulationBase):
@@ -83,66 +99,67 @@ class PPSimulation(SimulationBase):
     def __repr__(self):
         return '<{}[{}] N={}, type={}>'.format(type(self).__name__, id(self), len(self.space), self.type)
 
-    def run(self, n_steps, step_size):
-        # reset Progress bar
-        self._pb.reset(n_steps)
-        logging.info('Start simulation - type={}, N_particles={}, N_steps={}'.format(self.type, len(self.space),
-                                                                                     n_steps))
-        with h5py.File(self.output_filepath, 'w') as res_f:
-            # set initial hdf5 data
-            self.set_initial_data(res_f, n_steps, step_size)
-            # calculate initial accelerations
-            accs = self._kernel(self.space.r, self.space.m, self.G, self.eps)
-            # integration
-            for i in range(1, n_steps + 1):
-                new_accs = kernum.advance_pp_wrap(space.r, space.v, space.m, accs, step_size, self.G, self.eps)
-                accs = new_accs
-                # update hdf5 data
-                res_f['results/positions'][i, :] = self.space.r
-                res_f['results/velocities'][i, :] = self.space.v
-                self._pb.update()
-            res_f['info']['end_time'] = time.time()
-        logging.info('End simulation')
+    def calc_accs(self):
+        return self._kernel(self.space.r, self.space.m, self.G, self.eps)
+
+
+class BHSimulation(SimulationBase):
+    """
+        Simulation class for Barnes-Hut.
+    """
+    def __init__(self, space, output_filepath, G, eps, root_width, root_center, theta):
+        super().__init__(space, output_filepath, G, eps)
+        self.type = 'Barnes-Hut'
+        self.root_width = root_width
+        self.root_center = root_center
+        self.theta = theta
+        self.set_kernel(kernoct.calc_accs_octree_wrap)
+
+    def __repr__(self):
+        return '<{}[{}] N={}, type={}>'.format(type(self).__name__, id(self), len(self.space), self.type)
+
+    def calc_accs(self):
+        return self._kernel(self.root_width, *self.root_center, self.space.r, self.space.m, self.G, self.eps,
+                            self.theta)
 
 
 if __name__ == '__main__':
     def vel_func(pos_vec):
-        return np.array((1, 2, 3))
+        return np.array((0., 0., 0.))
 
 
     def mass_func(pos_vec):
         return 1.0
 
-    n = 10
+    n = 100
     cube_length = 1.0
     G = 1.0
     eps = 1.0e-3
-    theta = 0.75
+    theta = 0.
+    n_steps = 10
+    step_size = 0.01
 
     space = Space()
     space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
 
-    ofp = os.path.normpath(r'D:\Python_Projects\results\test02.hdf5')
-    sim = PPSimulation(space, ofp, 1.0, 1.0e-3)
-    sim.run(10, 0.01)
+    ofp_pp = os.path.normpath(r'D:\Python_Projects\results\test_pp.hdf5')
+    ofp_bh = os.path.normpath(r'D:\Python_Projects\results\test_bh.hdf5')
 
-    # x = sim.view_result_group('simulation_output/positions')
-    # print(x[1])
-    with h5py.File(sim.output_filepath, 'r') as f:
-        info = f['info']
-        for k, v in info.items():
-            print(k, info[k][()])
-        #print(f['simulation_info'].values())
-        #print(f['simulation_output/positions'][2])
+    sim_pp = PPSimulation(space, ofp_pp, G, eps)
+    from copy import deepcopy
+    space2 = deepcopy(space)
+    sim_bh = BHSimulation(space2, ofp_bh, G, eps, 1.0, np.array((0., 0., 0.)), theta)
 
+    sim_pp.run(n_steps, step_size)
+    sim_bh.run(n_steps, step_size)
 
     # result comparsion
-    # with h5py.File(bh_sim.output_filepath, 'r') as bh, h5py.File(pp_sim.output_filepath, 'r') as pp:
-    #     pos_data_pp = pp['simulation_output/positions']
-    #     pos_data_bh = bh['simulation_output/positions']
-    #     vel_data_pp = pp['simulation_output/velocities']
-    #     vel_data_bh = bh['simulation_output/velocities']
-    #     for k in range(n_steps + 1):
-    #         print("step: ", k)
-    #         print(np.max(np.abs(np.array(pos_data_bh[k]) - np.array(pos_data_pp[k]))))
-    #         print(np.max(np.abs(np.array(vel_data_bh[k]) - np.array(vel_data_pp[k]))))
+    with h5py.File(sim_pp.output_filepath, 'r') as pp, h5py.File(sim_bh.output_filepath, 'r') as bh:
+        pos_data_pp = pp['results/positions']
+        pos_data_bh = bh['results/positions']
+        vel_data_pp = pp['results/velocities']
+        vel_data_bh = bh['results/velocities']
+        for k in range(n_steps + 1):
+            print("step: ", k)
+            np.testing.assert_equal(pos_data_bh[k],  pos_data_pp[k])
+            np.testing.assert_equal(vel_data_bh[k], vel_data_pp[k])
