@@ -125,27 +125,6 @@ cdef calc_te(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m, double G, double
     return te
 
 
-#@cython.boundscheck(False)
-#@cython.wraparound(False)
-#cdef advance_pp(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m, DTYPE_t [:, :] accs, double dt, double G, double eps):
-#    """
-#        updates particle positions and velocities based on 2nd order Leapfrog method
-#    """
-#    cdef int n = accs.shape[0]
-#    cdef int k = accs.shape[1]
-#    cdef int i
-#    cdef DTYPE_t [:, :] new_accs
-#
-#    for i in range(n):
-#        r[i, 0] +=  v[i, 0] * dt + 0.5 * accs[i, 0] * dt * dt
-#        r[i, 1] +=  v[i, 1] * dt + 0.5 * accs[i, 1] * dt * dt
-#        r[i, 2] +=  v[i, 2] * dt + 0.5 * accs[i, 2] * dt * dt
-#    new_accs = kernbf.calculate_accs_pp_wrap(r, m, G, eps)
-#    for i in range(n):
-#        v[i, 0] +=  0.5 * (accs[i, 0] + new_accs[i, 0]) * dt
-#    return new_accs
-
-
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef advance_r(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:, :] accs, double dt):

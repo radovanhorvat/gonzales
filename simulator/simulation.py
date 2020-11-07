@@ -14,6 +14,21 @@ from simulator.space import Space
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 
 
+# ------------------------------------------------------
+# Result update handlers
+# ------------------------------------------------------
+
+def write_position(hdf5_fobj, space, step_num):
+    hdf5_fobj['results/positions'][step_num, :] = space.r
+
+
+def write_velocity(hdf5_fobj, space, step_num):
+    hdf5_fobj['results/velocities'][step_num, :] = space.v
+
+
+result_writer_map = {'positions': write_position, 'velocities': write_velocity}
+
+
 class SimulationBase:
     def __init__(self, space, output_filepath, G, eps):
         """
@@ -29,32 +44,53 @@ class SimulationBase:
         self.eps = eps
         self._pb = ProgressBar(1, 30)
         self._kernel = None
+        self._results = {'positions': (1, self.space.r.shape), 'velocities': (1, self.space.v.shape)}
+
+    def add_result(self, res_name, res_shape, res_frequency=1):
+        """
+        Adds a result which shall be written to the hdf5 file during the simulation. The shape
+        of the result needs to be provided, as does the frequency of the output. The default res_frequency
+        1 means the result will be written to the file at each simulation step.
+
+        :param res_name: string, name of result
+        :param res_shape: tuple, shape of result
+        :param res_frequency: int, result will be written every res_frequency steps
+        :return:
+        """
+        assert res_name in result_writer_map, 'Invalid result'
+        self._results[res_name] = (res_frequency, res_shape)
+
+    def _write_results(self, hdf5_obj, space, step_num):
+        for res_name, res_data in self._results.items():
+            res_freq, res_shape = res_data
+            if step_num % res_freq == 0:
+                result_writer_map[res_name](hdf5_obj, space, int(step_num / res_freq))
 
     @staticmethod
     def set_metadata(hdf5_obj, **kwargs):
         """
-            Sets metadata attributes for hdf5 object (can be a group or a dataset)
+        Sets metadata attributes for hdf5 object (can be a group or a dataset)
         """
         for k, v in kwargs.items():
             hdf5_obj[k] = v
 
-    def set_initial_data(self, hdf5_obj, n_steps, step_size):
+    def create_datasets(self, hdf5_obj, n_steps, step_size):
         """
-            Creates basic hdf5 structure and sets some initial data.
+        Creates hdf5 datasets.
         """
         info_grp = hdf5_obj.create_group('info')
         self.set_metadata(info_grp, number_of_steps=n_steps, time_step_size=step_size, G=self.G, epsilon=self.eps,
                           start_time=time.time(), number_of_particles=len(self.space), simulation_type=self.type)
         results_grp = hdf5_obj.create_group('results')
-        pos_data = results_grp.create_dataset('positions', (n_steps + 1, *self.space.r.shape))
-        vel_data = results_grp.create_dataset('velocities', (n_steps + 1, *self.space.v.shape))
-        pos_data[0, :] = self.space.r
-        vel_data[0, :] = self.space.v
+        for res_name, res_desc in self._results.items():
+            res_freq, res_shape = res_desc
+            n_rows = int(n_steps / res_freq)
+            results_grp.create_dataset(res_name, (n_rows + 1, *res_shape))
 
     def set_kernel(self, kernel_func):
         """
-            Sets the kernel function which will be used to calculate accelerations for each simulation
-            step.
+        Sets the kernel function which will be used to calculate accelerations for each simulation
+        step.
 
         :param kernel_func: function used to calculate accelerations
         """
@@ -70,7 +106,8 @@ class SimulationBase:
                                                                                      n_steps))
         with h5py.File(self.output_filepath, 'w') as res_f:
             # set initial hdf5 data
-            self.set_initial_data(res_f, n_steps, step_size)
+            self.create_datasets(res_f, n_steps, step_size)
+            self._write_results(res_f, self.space, 0)
             # calculate initial accelerations
             accs = self.calc_accs()
             # integration
@@ -80,8 +117,7 @@ class SimulationBase:
                 kernum.advance_v_wrap(self.space.v, accs, new_accs, step_size)
                 accs = new_accs
                 # update hdf5 data
-                res_f['results/positions'][i, :] = self.space.r
-                res_f['results/velocities'][i, :] = self.space.v
+                self._write_results(res_f, self.space, i)
                 self._pb.update()
             res_f['info']['end_time'] = time.time()
         logging.info('End simulation')
@@ -89,7 +125,7 @@ class SimulationBase:
 
 class PPSimulation(SimulationBase):
     """
-        Simulation class for brute-force.
+    Simulation class for brute-force.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -105,7 +141,7 @@ class PPSimulation(SimulationBase):
 
 class BHSimulation(SimulationBase):
     """
-        Simulation class for Barnes-Hut.
+    Simulation class for Barnes-Hut.
     """
     def __init__(self, space, output_filepath, G, eps, root_width, root_center, theta):
         super().__init__(space, output_filepath, G, eps)
@@ -131,35 +167,17 @@ if __name__ == '__main__':
     def mass_func(pos_vec):
         return 1.0
 
-    n = 100
-    cube_length = 1.0
+    n = 1000
+    cube_length = np.sqrt(n)
     G = 1.0
     eps = 1.0e-3
-    theta = 0.
-    n_steps = 10
+    theta = 0.75
+    n_steps = 100
     step_size = 0.01
 
     space = Space()
     space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
 
-    ofp_pp = os.path.normpath(r'D:\Python_Projects\results\test_pp.hdf5')
     ofp_bh = os.path.normpath(r'D:\Python_Projects\results\test_bh.hdf5')
-
-    sim_pp = PPSimulation(space, ofp_pp, G, eps)
-    from copy import deepcopy
-    space2 = deepcopy(space)
-    sim_bh = BHSimulation(space2, ofp_bh, G, eps, 1.0, np.array((0., 0., 0.)), theta)
-
-    sim_pp.run(n_steps, step_size)
+    sim_bh = BHSimulation(space, ofp_bh, G, eps, cube_length, np.array((0., 0., 0.)), theta)
     sim_bh.run(n_steps, step_size)
-
-    # result comparsion
-    with h5py.File(sim_pp.output_filepath, 'r') as pp, h5py.File(sim_bh.output_filepath, 'r') as bh:
-        pos_data_pp = pp['results/positions']
-        pos_data_bh = bh['results/positions']
-        vel_data_pp = pp['results/velocities']
-        vel_data_bh = bh['results/velocities']
-        for k in range(n_steps + 1):
-            print("step: ", k)
-            np.testing.assert_equal(pos_data_bh[k],  pos_data_pp[k])
-            np.testing.assert_equal(vel_data_bh[k], vel_data_pp[k])
