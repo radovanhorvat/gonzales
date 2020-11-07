@@ -180,20 +180,24 @@ if __name__ == '__main__':
     def mass_func(pos_vec):
         return 1.0
 
-    n = 10000
+    n = 1000
     cube_length = np.sqrt(n)
     G = 1.0
     eps = 1.0e-3
     theta = 0.75
-    n_steps = 100
-    step_size = 0.01
+    n_steps = 1000
+    step_size = 0.001
 
     space = Space()
     space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
 
     ofp_bh = os.path.normpath(r'D:\Python_Projects\results\test_bh.hdf5')
     sim_bh = BHSimulation(space, ofp_bh, G, eps, cube_length, np.array((0., 0., 0.)), theta)
+    sim_bh.add_result('energies', (1,), n_steps)
     sim_bh.run(n_steps, step_size)
 
-    # with h5py.File(sim_bh.output_filepath, 'r') as bh:
-    #     print(bh['info']['total_time'][()])
+    with h5py.File(sim_bh.output_filepath, 'r') as bh:
+        init = bh['results']['energies'][0]
+        fin = bh['results']['energies'][1]
+        print(init, fin)
+        print(np.abs(init - fin) / np.abs(init))

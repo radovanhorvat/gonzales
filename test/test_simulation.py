@@ -116,3 +116,25 @@ def test_sim_barnes_hut_theta_non_zero():
         sim_bh.run(n_steps, step_size)
         # result comparsion
         _are_results_close(sim_pp, sim_bh, n_steps)
+
+
+def test_energy_conservation_barnes_hut():
+    # test Barnes-Hut energy conservation
+    with make_temp_result_dir('temp_results') as res_dir:
+        bh_file = os.path.join(res_dir, 'test_bh.hdf5')
+        n = 1000
+        G = 1.0
+        eps = 1.0e-3
+        theta = 0.75
+        n_steps = 1000
+        step_size = 0.001
+        cube_length = int(np.sqrt(n))
+        space = Space()
+        space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
+        sim_bh = sim.BHSimulation(space, bh_file, G, eps, cube_length, np.array((0., 0., 0.)), theta)
+        sim_bh.add_result('energies', (1,), n_steps)
+        sim_bh.run(n_steps, step_size)
+        with h5py.File(sim_bh.output_filepath, 'r') as bh:
+            e_in = bh['results']['energies'][0]
+            e_fin = bh['results']['energies'][1]
+            assert np.abs(e_in - e_fin) / np.abs(e_in) <= 0.002
