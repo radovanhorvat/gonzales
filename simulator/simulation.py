@@ -18,16 +18,26 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=loggin
 # Result update handlers
 # ------------------------------------------------------
 
-def write_position(hdf5_fobj, space, step_num):
+def write_position(hdf5_fobj, sim, space, step_num):
     hdf5_fobj['results/positions'][step_num, :] = space.r
 
 
-def write_velocity(hdf5_fobj, space, step_num):
+def write_velocity(hdf5_fobj, sim, space, step_num):
     hdf5_fobj['results/velocities'][step_num, :] = space.v
 
 
-result_writer_map = {'positions': write_position, 'velocities': write_velocity}
+def write_total_energy(hdf5_fobj, sim, space, step_num):
+    hdf5_fobj['results/energies'][step_num] = kernum.calc_te_wrap(space.r, space.v, space.m, sim.G, sim.eps)
 
+
+result_writer_map = {'positions': write_position,
+                     'velocities': write_velocity,
+                     'energies': write_total_energy}
+
+
+# ------------------------------------------------------
+# Simulation classes
+# ------------------------------------------------------
 
 class SimulationBase:
     def __init__(self, space, output_filepath, G, eps):
@@ -44,6 +54,8 @@ class SimulationBase:
         self.eps = eps
         self._pb = ProgressBar(1, 30)
         self._kernel = None
+        # self._results = {'positions': (1, self.space.r.shape), 'velocities': (1, self.space.v.shape),
+        #                  'energies': (1, (1,))}
         self._results = {'positions': (1, self.space.r.shape), 'velocities': (1, self.space.v.shape)}
 
     def add_result(self, res_name, res_shape, res_frequency=1):
@@ -64,7 +76,7 @@ class SimulationBase:
         for res_name, res_data in self._results.items():
             res_freq, res_shape = res_data
             if step_num % res_freq == 0:
-                result_writer_map[res_name](hdf5_obj, space, int(step_num / res_freq))
+                result_writer_map[res_name](hdf5_obj, self, space, int(step_num / res_freq))
 
     @staticmethod
     def set_metadata(hdf5_obj, **kwargs):
@@ -120,6 +132,7 @@ class SimulationBase:
                 self._write_results(res_f, self.space, i)
                 self._pb.update()
             res_f['info']['end_time'] = time.time()
+            res_f['info']['total_time'] = res_f['info']['end_time'][()] - res_f['info']['start_time'][()]
         logging.info('End simulation')
 
 
@@ -167,7 +180,7 @@ if __name__ == '__main__':
     def mass_func(pos_vec):
         return 1.0
 
-    n = 1000
+    n = 10000
     cube_length = np.sqrt(n)
     G = 1.0
     eps = 1.0e-3
@@ -181,3 +194,6 @@ if __name__ == '__main__':
     ofp_bh = os.path.normpath(r'D:\Python_Projects\results\test_bh.hdf5')
     sim_bh = BHSimulation(space, ofp_bh, G, eps, cube_length, np.array((0., 0., 0.)), theta)
     sim_bh.run(n_steps, step_size)
+
+    # with h5py.File(sim_bh.output_filepath, 'r') as bh:
+    #     print(bh['info']['total_time'][()])

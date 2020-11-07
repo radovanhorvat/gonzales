@@ -172,7 +172,7 @@ def calc_pe_wrap(r, m, G, eps):
     return calc_pe(r, m, G, eps)
 
 
-@timing
+#@timing
 def calc_te_wrap(r, v, m, G, eps):
     return calc_te(r, v, m, G, eps)
 
