@@ -52,7 +52,7 @@ class SimulationBase:
         self.output_filepath = output_filepath
         self.G = G
         self.eps = eps
-        self._pb = ProgressBar(1, 30)
+        self._pb = ProgressBar(1, 40)
         self._kernel = None
         # self._results = {'positions': (1, self.space.r.shape), 'velocities': (1, self.space.v.shape),
         #                  'energies': (1, (1,))}
@@ -72,11 +72,11 @@ class SimulationBase:
         assert res_name in result_writer_map, 'Invalid result'
         self._results[res_name] = (res_frequency, res_shape)
 
-    def _write_results(self, hdf5_obj, space, step_num):
+    def _write_results(self, hdf5_fobj, space, step_num):
         for res_name, res_data in self._results.items():
             res_freq, res_shape = res_data
             if step_num % res_freq == 0:
-                result_writer_map[res_name](hdf5_obj, self, space, int(step_num / res_freq))
+                result_writer_map[res_name](hdf5_fobj, self, space, int(step_num / res_freq))
 
     @staticmethod
     def set_metadata(hdf5_obj, **kwargs):
@@ -86,14 +86,14 @@ class SimulationBase:
         for k, v in kwargs.items():
             hdf5_obj[k] = v
 
-    def create_datasets(self, hdf5_obj, n_steps, step_size):
+    def create_datasets(self, hdf5_fobj, n_steps, step_size):
         """
         Creates hdf5 datasets.
         """
-        info_grp = hdf5_obj.create_group('info')
+        info_grp = hdf5_fobj.create_group('info')
         self.set_metadata(info_grp, number_of_steps=n_steps, time_step_size=step_size, G=self.G, epsilon=self.eps,
                           start_time=time.time(), number_of_particles=len(self.space), simulation_type=self.type)
-        results_grp = hdf5_obj.create_group('results')
+        results_grp = hdf5_fobj.create_group('results')
         for res_name, res_desc in self._results.items():
             res_freq, res_shape = res_desc
             n_rows = int(n_steps / res_freq)
