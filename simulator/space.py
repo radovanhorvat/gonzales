@@ -55,7 +55,7 @@ class Space:
         v = np.apply_along_axis(v_func, 1, r)
         self.r = np.vstack((self.r, r + center))
         self.v = np.vstack((self.v, v))
-        self.m = np.append(self.m, np.apply_along_axis(m_func, 1, self.r))
+        self.m = np.append(self.m, np.apply_along_axis(m_func, 1, r))
 
     #@timing
     def add_sphere(self, n, center, radius, v_func, m_func):

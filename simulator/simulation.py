@@ -192,7 +192,7 @@ if __name__ == '__main__':
     space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
 
     ofp_bh = os.path.normpath(r'D:\Python_Projects\results\test_bh.hdf5')
-    sim_bh = BHSimulation(space, ofp_bh, G, eps, cube_length, np.array((0., 0., 0.)), theta)
+    sim_bh = BHSimulation(space, ofp_bh, G, eps, 10 * cube_length, np.array((0., 0., 0.)), theta)
     sim_bh.add_result('energies', (1,), n_steps)
     sim_bh.run(n_steps, step_size)
 

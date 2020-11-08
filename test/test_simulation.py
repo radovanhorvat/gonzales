@@ -137,4 +137,4 @@ def test_energy_conservation_barnes_hut():
         with h5py.File(sim_bh.output_filepath, 'r') as bh:
             e_in = bh['results']['energies'][0]
             e_fin = bh['results']['energies'][1]
-            assert np.abs(e_in - e_fin) / np.abs(e_in) <= 0.002
+            assert np.abs(e_in - e_fin) / np.abs(e_in) <= 0.005

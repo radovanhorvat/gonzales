@@ -5,10 +5,9 @@ import numpy as np
 
 import pyqtgraph.opengl as gl
 from pyqtgraph.Qt import QtGui, QtCore
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
 
 from simulator.space import Space
-import simulator.simulation as sim
+from simulator.simulation import PPSimulation, BHSimulation
 
 
 class ViewWidget(gl.GLViewWidget):
@@ -62,7 +61,7 @@ if __name__ == '__main__':
         return np.array((0., 0., 0.))
 
     def mass_func(pos_vec):
-        return 1.0e3
+        return 1.0e4
 
     # space = Space()
     # space.add_cuboid(10000, np.array((0, 0, 0)), 1, 1, 1, vel_func, mass_func)
@@ -72,20 +71,21 @@ if __name__ == '__main__':
     # p = Points3DPlot(space)
     # p.show()
 
-    n = 1000
+    n = 10000
     cube_length = np.sqrt(n)
     G = 1.0
-    eps = 1.0e-5
+    eps = 1.0e-3
     theta = 0.75
-    n_steps = 1000
+    n_steps = 300
     step_size = 0.001
 
     space = Space()
     space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
+    space.add_cuboid(n, np.array((300., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
 
     ofp = os.path.normpath(r'D:\Python_Projects\results\test_bh.hdf5')
-    #s1 = sim.PPSimulation(space, ofp, G, eps)
-    s1 = sim.BHSimulation(space, ofp, G, eps, cube_length, np.array((0., 0., 0.)), theta)
+    #s1 = PPSimulation(space, ofp, G, eps)
+    s1 = BHSimulation(space, ofp, G, eps, 100 * cube_length, np.array((0., 0., 0.)), theta)
     #s1.add_result('energies', (1,), 1)
     s1.run(n_steps, step_size)
 
