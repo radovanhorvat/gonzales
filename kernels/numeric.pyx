@@ -16,45 +16,6 @@ ctypedef np.float64_t DTYPE_t
 # Numerical kernels
 # ---------------------------------------------------
 
-# -------- old stuff
-
-@timing
-def calc_com_old(pos_vec, mass_vec):
-    n, m = pos_vec.shape
-    center_of_mass = np.zeros((n, m))
-    for i in range(m):
-        center_of_mass[:, i] = pos_vec[:, i] * mass_vec
-    return center_of_mass.sum(axis=0) / mass_vec.sum()
-
-
-@timing
-def calc_pe_old(pos_vec, mass_vec, epsilon, G=6.67e-11):
-    n, m = pos_vec.shape
-    interaction_matrix = np.zeros((n, n))
-    for i in range(n - 1):
-        R_1 = np.ones((n - (i + 1), m)) * pos_vec[i]
-        R_2 = pos_vec[i + 1:]
-        R = R_2 - R_1
-        interaction_matrix[i, i + 1:] = 1 / (np.linalg.norm(R, axis=1) + epsilon)
-    return -G * np.dot(interaction_matrix @ mass_vec, mass_vec)
-
-@timing
-def calc_ke_old(vel_vec, mass_vec):
-    return 0.5 * (vel_vec ** 2).sum(axis=1) @ mass_vec
-
-@timing
-def advance_pp_old(space, time_step, accelerations, mass_vec, G, epsilon):
-    """
-        Updates particle positions and velocities based on 2nd order Leapfrog method
-    """
-    space.r += space.v * time_step + 0.5 * accelerations * time_step ** 2
-    new_accelerations = kernbf.calculate_accs_pp_wrap(space.r, mass_vec, G, epsilon)
-    space.v += 0.5 * (accelerations + new_accelerations) * time_step
-    return new_accelerations
-
-
-# -------- new stuff
-
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef calc_com(DTYPE_t [:, :] r, DTYPE_t [:] m):
