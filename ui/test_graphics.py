@@ -71,7 +71,7 @@ if __name__ == '__main__':
     # p = Points3DPlot(space)
     # p.show()
 
-    n = 10000
+    n = 100
     cube_length = np.sqrt(n)
     G = 1.0
     eps = 1.0e-3

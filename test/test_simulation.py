@@ -131,7 +131,7 @@ def test_energy_conservation_barnes_hut():
         cube_length = int(np.sqrt(n))
         space = Space()
         space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
-        sim_bh = sim.BHSimulation(space, bh_file, G, eps, cube_length, np.array((0., 0., 0.)), theta)
+        sim_bh = sim.BHSimulation(space, bh_file, G, eps, 10 * cube_length, np.array((0., 0., 0.)), theta)
         sim_bh.add_result('energies', (1,), n_steps)
         sim_bh.run(n_steps, step_size)
         with h5py.File(sim_bh.output_filepath, 'r') as bh:

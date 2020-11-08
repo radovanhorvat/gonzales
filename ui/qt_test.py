@@ -35,7 +35,7 @@ class FormWidget(QWidget):
         self.setLayout(self.layout)
 
 
-class Example(QMainWindow):
+class NBodyViewer(QMainWindow):
 
     def __init__(self):
         super().__init__()
@@ -108,7 +108,7 @@ class Example(QMainWindow):
 
 def run_app():
     app = QApplication(sys.argv)
-    ex = Example()
+    nbv = NBodyViewer()
     sys.exit(app.exec_())
 
 
