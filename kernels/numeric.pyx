@@ -151,6 +151,8 @@ cdef advance_v(DTYPE_t [:, :] v, DTYPE_t [:, :] accs, DTYPE_t [:, :] new_accs, d
 
     for i in range(n):
         v[i, 0] +=  0.5 * (accs[i, 0] + new_accs[i, 0]) * dt
+        v[i, 1] +=  0.5 * (accs[i, 1] + new_accs[i, 1]) * dt
+        v[i, 2] +=  0.5 * (accs[i, 2] + new_accs[i, 2]) * dt
 
 
 # ---------------------------------------------------
