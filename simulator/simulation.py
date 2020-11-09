@@ -114,14 +114,18 @@ class SimulationBase:
     def run(self, n_steps, step_size):
         # reset Progress bar
         self._pb.reset(n_steps)
-        logging.info('Start simulation - type={}, N_particles={}, N_steps={}'.format(self.type, len(self.space),
-                                                                                     n_steps))
         with h5py.File(self.output_filepath, 'w') as res_f:
             # set initial hdf5 data
+            logging.info('Simulation - type={}, N_particles={}, N_steps={}'.format(self.type, len(self.space),
+                                                                                   n_steps))
+            logging.info('Creating datasets')
             self.create_datasets(res_f, n_steps, step_size)
+            logging.info('Writing initial data')
             self._write_results(res_f, self.space, 0)
             # calculate initial accelerations
+            logging.info('Calculating initial accelerations')
             accs = self.calc_accs()
+            logging.info('Start simulation')
             # integration
             for i in range(1, n_steps + 1):
                 kernum.advance_r_wrap(self.space.r, self.space.v, accs, step_size)
