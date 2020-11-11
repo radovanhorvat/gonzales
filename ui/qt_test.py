@@ -1,6 +1,6 @@
 import h5py
 
-from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QWidget, QPushButton, QLabel,
+from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QWidget, QPushButton, QLabel, QGroupBox,
                              QAction, QFileDialog, QApplication, QVBoxLayout)
 from PyQt5.QtGui import QIcon
 from pyqtgraph.Qt import QtGui, QtCore
@@ -28,10 +28,18 @@ class FormWidget(QWidget):
         super(FormWidget, self).__init__(parent)
         self.view_widget = ViewWidget()
         self.layout = QVBoxLayout(self)
+
+        play_button = QPushButton('Play', self)
+        play_button.clicked.connect(self.parent().on_play)
+
+        self.layout.addWidget(play_button)
         self.layout.addWidget(self.view_widget)
         self.info_label = QLabel()
+        self.params_label = QLabel()
         self.layout.addWidget(self.info_label)
+        self.layout.addWidget(self.params_label)
         self.info_label.setMaximumHeight(50)
+        self.params_label.setMaximumHeight(50)
         self.setLayout(self.layout)
 
 
@@ -46,7 +54,7 @@ class NBodyViewer(QMainWindow):
         self.init_ui()
 
     def _refresh_status_bar(self):
-        self.statusBar().showMessage('Loaded file: {}, step: {}'.format(self._filename, self._cnt))
+        self.statusBar().showMessage('Loaded file: {}'.format(self._filename))
 
     def init_ui(self):
         self.cw = FormWidget(self)
@@ -78,11 +86,12 @@ class NBodyViewer(QMainWindow):
         if self._cnt >= self._fobj['info']['number_of_steps'][()]:
             return
         pos_data = self._fobj['results']['positions'][self._cnt]
-        self.cw.view_widget.points.setData(pos=pos_data, size=3)
-        self._refresh_status_bar()
+        self.cw.view_widget.points.setData(pos=pos_data, size=3, color=(.5, .3, .1, .7))
+        self.cw.params_label.setText('Step: {}'.format(self._cnt))
 
     def on_play(self):
         if not self._filename:
+            self.statusBar().showMessage('No file loaded')
             return
         self._cnt = 0
         self._timer.timeout.connect(self._update_anim)
