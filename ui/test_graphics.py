@@ -34,8 +34,8 @@ if __name__ == '__main__':
     G = 1.0
     eps = 1.0e-3
     theta = 0.75
-    n_steps = 100
-    step_size = 0.001
+    n_steps = 500
+    step_size = 0.01
 
     space = Space()
     #space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)

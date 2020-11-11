@@ -15,27 +15,6 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=loggin
 
 
 # ------------------------------------------------------
-# Result update handlers
-# ------------------------------------------------------
-
-def write_position(hdf5_fobj, sim, space, step_num):
-    hdf5_fobj['results/positions'][step_num, :] = space.r
-
-
-def write_velocity(hdf5_fobj, sim, space, step_num):
-    hdf5_fobj['results/velocities'][step_num, :] = space.v
-
-
-def write_total_energy(hdf5_fobj, sim, space, step_num):
-    hdf5_fobj['results/energies'][step_num] = kernum.calc_te_wrap(space.r, space.v, space.m, sim.G, sim.eps)
-
-
-result_writer_map = {'positions': write_position,
-                     'velocities': write_velocity,
-                     'energies': write_total_energy}
-
-
-# ------------------------------------------------------
 # Simulation classes
 # ------------------------------------------------------
 
@@ -54,9 +33,10 @@ class SimulationBase:
         self.eps = eps
         self._pb = ProgressBar(1, 40)
         self._kernel = None
-        # self._results = {'positions': (1, self.space.r.shape), 'velocities': (1, self.space.v.shape),
-        #                  'energies': (1, (1,))}
         self._results = {'positions': (1, self.space.r.shape), 'velocities': (1, self.space.v.shape)}
+        self._result_writer_map = {'positions': self._write_position,
+                                   'velocities': self._write_velocity,
+                                   'energies': self._write_total_energy}
 
     def add_result(self, res_name, res_shape, res_frequency=1):
         """
@@ -69,14 +49,24 @@ class SimulationBase:
         :param res_frequency: int, result will be written every res_frequency steps
         :return:
         """
-        assert res_name in result_writer_map, 'Invalid result'
+        assert res_name in self._result_writer_map, 'Invalid result'
         self._results[res_name] = (res_frequency, res_shape)
 
-    def _write_results(self, hdf5_fobj, space, step_num):
+    def _write_position(self, hdf5_fobj, step_num):
+        hdf5_fobj['results/positions'][step_num, :] = self.space.r
+
+    def _write_velocity(self, hdf5_fobj, step_num):
+        hdf5_fobj['results/velocities'][step_num, :] = self.space.v
+
+    def _write_total_energy(self, hdf5_fobj, step_num):
+        hdf5_fobj['results/energies'][step_num] = kernum.calc_te_wrap(self.space.r, self.space.v, self.space.m, self.G,
+                                                                      self.eps)
+
+    def _write_results(self, hdf5_fobj, step_num):
         for res_name, res_data in self._results.items():
             res_freq, res_shape = res_data
             if step_num % res_freq == 0:
-                result_writer_map[res_name](hdf5_fobj, self, space, int(step_num / res_freq))
+                self._result_writer_map[res_name](hdf5_fobj, int(step_num / res_freq))
 
     @staticmethod
     def set_metadata(hdf5_obj, **kwargs):
@@ -121,7 +111,7 @@ class SimulationBase:
             logging.info('Creating datasets')
             self.create_datasets(res_f, n_steps, step_size)
             logging.info('Writing initial data')
-            self._write_results(res_f, self.space, 0)
+            self._write_results(res_f, 0)
             # calculate initial accelerations
             logging.info('Calculating initial accelerations')
             accs = self.calc_accs()
@@ -133,7 +123,7 @@ class SimulationBase:
                 kernum.advance_v_wrap(self.space.v, accs, new_accs, step_size)
                 accs = new_accs
                 # update hdf5 data
-                self._write_results(res_f, self.space, i)
+                self._write_results(res_f, i)
                 self._pb.update()
             res_f['info']['end_time'] = time.time()
             res_f['info']['total_time'] = res_f['info']['end_time'][()] - res_f['info']['start_time'][()]
