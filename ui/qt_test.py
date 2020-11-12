@@ -10,6 +10,8 @@ from pathlib import Path
 
 import pyqtgraph.opengl as gl
 
+from simulator.simulation import ResultReader
+
 
 class ViewWidget(gl.GLViewWidget):
     def __init__(self):
@@ -55,9 +57,10 @@ class NBodyViewer(QMainWindow):
     def __init__(self, filename=''):
         super().__init__()
         self._filename = filename
-        self._fobj = None
+        self._reader = None
         self._timer = QtCore.QTimer()
         self._cnt = 0
+        self._num_steps = 0
         self._color = (.5, .3, .1, .7)
         self.init_ui()
         if filename:
@@ -93,9 +96,9 @@ class NBodyViewer(QMainWindow):
 
     def _update_anim(self):
         self._cnt += 1
-        if self._cnt >= self._fobj['info']['number_of_steps'][()]:
+        if self._cnt > self._num_steps:
             return
-        pos_data = self._fobj['results']['position'][self._cnt]
+        pos_data = self._reader.get_result('position', self._cnt)
         self.cw.view_widget.points.setData(pos=pos_data, size=3, color=self._color)
         self.cw.params_label.setText('Step: {}'.format(self._cnt))
 
@@ -112,24 +115,27 @@ class NBodyViewer(QMainWindow):
         fname = QFileDialog.getOpenFileName(self, 'Open file', home_dir)
         if not fname:
             return
+        self._cnt = 0
         self._set_data_from_file(fname[0])
 
     def _set_data_from_file(self, filename):
         self._filename = filename
-        self._fobj = h5py.File(self._filename, 'r')
-        self.cw.view_widget.points.setData(pos=self._fobj['results']['position'][self._cnt], size=3,
-                                           color=self._color)
+        self._reader = ResultReader(filename)
+        pos_data = self._reader.get_result('position', self._cnt)
+        self.cw.view_widget.points.setData(pos=pos_data, size=3, color=self._color)
         self._refresh_status_bar()
         info_str = 'N: {}, G: {}, eps: {}, type: {}'.format(
-            str(self._fobj['info']['number_of_particles'][()]),
-            str(self._fobj['info']['G'][()]),
-            str(self._fobj['info']['epsilon'][()]),
-            str(self._fobj['info']['simulation_type'][()])
+            str(self._reader.get_info()['number_of_particles'][()]),
+            str(self._reader.get_info()['G'][()]),
+            str(self._reader.get_info()['epsilon'][()]),
+            str(self._reader.get_info()['simulation_type'][()])
         )
+        self._num_steps = self._reader.get_info()['number_of_steps'][()]
         self.cw.info_label.setText(info_str)
 
     def closeEvent(self, event):
-        #todo:  close hdf5 reader here
+        if self._reader:
+            self._reader.close()
         super(QMainWindow, self).closeEvent(event)
 
 
