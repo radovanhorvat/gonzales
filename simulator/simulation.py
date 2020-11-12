@@ -15,6 +15,45 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=loggin
 
 
 # ------------------------------------------------------
+# Result reader
+# ------------------------------------------------------
+
+class ResultReader:
+    """
+    Reader for hdf5 results. Should be closed after using.
+    """
+    def __init__(self, hdf5_filepath):
+        """
+
+        :param hdf5_filepath: path to hdf5 file
+        """
+        if not h5py.is_hdf5(hdf5_filepath):
+            raise ValueError('Not an hdf5 file: {}'.format(hdf5_filepath))
+        self._fobj = h5py.File(hdf5_filepath, 'r')
+
+    def get_info(self):
+        """
+        Returns simulation info, which is dict-like iterable.
+        """
+        return self._fobj['info']
+
+    def get_result(self, result_name, step_num):
+        """
+
+        :param result_name: str, name of result, must be supported by simulation
+        :param step_num: step number
+        """
+        return self._fobj['results'][result_name][step_num]
+
+    def close(self):
+        """
+        Closes the hdf5 file. This should be called when the reader is not needed anymore.
+        """
+        if bool(self._fobj):
+            self._fobj.close()
+
+
+# ------------------------------------------------------
 # Simulation classes
 # ------------------------------------------------------
 
@@ -179,12 +218,12 @@ if __name__ == '__main__':
     def mass_func(pos_vec):
         return 1.0
 
-    n = 1000
+    n = 10
     cube_length = np.sqrt(n)
     G = 1.0
     eps = 1.0e-3
     theta = 0.75
-    n_steps = 1000
+    n_steps = 2
     step_size = 0.001
 
     space = Space()
@@ -195,8 +234,15 @@ if __name__ == '__main__':
     sim_bh.add_result('energy', (1,), n_steps)
     sim_bh.run(n_steps, step_size)
 
-    with h5py.File(sim_bh.output_filepath, 'r') as bh:
-        init = bh['results']['energy'][0]
-        fin = bh['results']['energy'][1]
-        print(init, fin)
-        print(np.abs(init - fin) / np.abs(init))
+    r = ResultReader(sim_bh.output_filepath)
+    info = r.get_info()
+    pos = r.get_result('position', 1)
+    print(pos)
+    r.close()
+
+
+    # with h5py.File(sim_bh.output_filepath, 'r') as bh:
+    #     init = bh['results']['energy'][0]
+    #     fin = bh['results']['energy'][1]
+    #     print(init, fin)
+    #     print(np.abs(init - fin) / np.abs(init))

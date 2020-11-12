@@ -128,6 +128,10 @@ class NBodyViewer(QMainWindow):
         )
         self.cw.info_label.setText(info_str)
 
+    def closeEvent(self, event):
+        #todo:  close hdf5 reader here
+        super(QMainWindow, self).closeEvent(event)
+
 
 def run_viewer(filename=''):
     app = QApplication(sys.argv)
