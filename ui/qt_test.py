@@ -1,4 +1,5 @@
 import h5py
+import numpy as np
 
 from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QWidget, QPushButton, QLabel, QGroupBox,
                              QAction, QFileDialog, QApplication, QVBoxLayout)
@@ -17,17 +18,15 @@ class ViewWidget(gl.GLViewWidget):
     def __init__(self):
         super().__init__()
         self.opts['distance'] = 10
-        #self.setGeometry(50, 50, 1600, 900)
         self.setWindowTitle('3D space')
-        self.points = gl.GLScatterPlotItem()
+        self.points = gl.GLScatterPlotItem(pos=np.empty(shape=(0, 3)))
         self.addItem(self.points)
         self.show()
 
 
-class FormWidget(QWidget):
-
+class MainWidget(QWidget):
     def __init__(self, parent):
-        super(FormWidget, self).__init__(parent)
+        super(MainWidget, self).__init__(parent)
         self.layout = QVBoxLayout(self)
         self.view_widget = ViewWidget()
 
@@ -53,10 +52,9 @@ class FormWidget(QWidget):
 
 
 class NBodyViewer(QMainWindow):
-
     def __init__(self, filename=''):
         super().__init__()
-        self._filename = filename
+        self._filename = None
         self._reader = None
         self._timer = QtCore.QTimer()
         self._cnt = 0
@@ -70,8 +68,8 @@ class NBodyViewer(QMainWindow):
         self.statusBar().showMessage('Loaded file: {}'.format(self._filename))
 
     def init_ui(self):
-        self.cw = FormWidget(self)
-        self.setCentralWidget(self.cw)
+        self.main_widget = MainWidget(self)
+        self.setCentralWidget(self.main_widget)
         self.statusBar()
         self._refresh_status_bar()
 
@@ -94,20 +92,20 @@ class NBodyViewer(QMainWindow):
         self.setWindowTitle('N-body visualization')
         self.show()
 
-    def _update_anim(self):
+    def _update_view(self):
         self._cnt += 1
         if self._cnt > self._num_steps:
             return
         pos_data = self._reader.get_result('position', self._cnt)
-        self.cw.view_widget.points.setData(pos=pos_data, size=3, color=self._color)
-        self.cw.params_label.setText('Step: {}'.format(self._cnt))
+        self.main_widget.view_widget.points.setData(pos=pos_data, size=3, color=self._color)
+        self.main_widget.params_label.setText('Step: {}'.format(self._cnt))
 
     def on_play(self):
         if not self._filename:
             self.statusBar().showMessage('No file loaded')
             return
         self._cnt = 0
-        self._timer.timeout.connect(self._update_anim)
+        self._timer.timeout.connect(self._update_view)
         self._timer.start(50)
 
     def on_file_open(self):
@@ -122,7 +120,7 @@ class NBodyViewer(QMainWindow):
         self._filename = filename
         self._reader = ResultReader(filename)
         pos_data = self._reader.get_result('position', self._cnt)
-        self.cw.view_widget.points.setData(pos=pos_data, size=3, color=self._color)
+        self.main_widget.view_widget.points.setData(pos=pos_data, size=3, color=self._color)
         self._refresh_status_bar()
         info_str = 'N: {}, G: {}, eps: {}, type: {}'.format(
             str(self._reader.get_info()['number_of_particles'][()]),
@@ -131,9 +129,10 @@ class NBodyViewer(QMainWindow):
             str(self._reader.get_info()['simulation_type'][()])
         )
         self._num_steps = self._reader.get_info()['number_of_steps'][()]
-        self.cw.info_label.setText(info_str)
+        self.main_widget.info_label.setText(info_str)
 
     def closeEvent(self, event):
+        self._timer.stop()
         if self._reader:
             self._reader.close()
         super(QMainWindow, self).closeEvent(event)
