@@ -28,12 +28,12 @@ if __name__ == '__main__':
     # p = Points3DPlot(space)
     # p.show()
 
-    n = 100000
+    n = 10000
     cube_length = np.sqrt(n)
     G = 1.0
     eps = 1.0e-3
     theta = 1.0
-    n_steps = 1000
+    n_steps = 100
     step_size = 0.001
 
     space = Space()

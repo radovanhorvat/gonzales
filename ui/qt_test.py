@@ -95,7 +95,7 @@ class NBodyViewer(QMainWindow):
         self._cnt += 1
         if self._cnt >= self._fobj['info']['number_of_steps'][()]:
             return
-        pos_data = self._fobj['results']['positions'][self._cnt]
+        pos_data = self._fobj['results']['position'][self._cnt]
         self.cw.view_widget.points.setData(pos=pos_data, size=3, color=self._color)
         self.cw.params_label.setText('Step: {}'.format(self._cnt))
 
@@ -117,7 +117,7 @@ class NBodyViewer(QMainWindow):
     def _set_data_from_file(self, filename):
         self._filename = filename
         self._fobj = h5py.File(self._filename, 'r')
-        self.cw.view_widget.points.setData(pos=self._fobj['results']['positions'][self._cnt], size=3,
+        self.cw.view_widget.points.setData(pos=self._fobj['results']['position'][self._cnt], size=3,
                                            color=self._color)
         self._refresh_status_bar()
         info_str = 'N: {}, G: {}, eps: {}, type: {}'.format(

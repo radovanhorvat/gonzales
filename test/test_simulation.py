@@ -26,10 +26,10 @@ def make_temp_result_dir(dir_name):
 
 def _are_results_equal(sim1, sim2, n_steps):
     with h5py.File(sim1.output_filepath, 'r') as pp, h5py.File(sim2.output_filepath, 'r') as bh:
-        pos_data_pp = pp['results/positions']
-        pos_data_bh = bh['results/positions']
-        vel_data_pp = pp['results/velocities']
-        vel_data_bh = bh['results/velocities']
+        pos_data_pp = pp['results/position']
+        pos_data_bh = bh['results/position']
+        vel_data_pp = pp['results/velocity']
+        vel_data_bh = bh['results/velocity']
         for k in range(n_steps + 1):
             np.testing.assert_equal(pos_data_bh[k],  pos_data_pp[k])
             np.testing.assert_equal(vel_data_bh[k], vel_data_pp[k])
@@ -37,10 +37,10 @@ def _are_results_equal(sim1, sim2, n_steps):
 
 def _are_results_close(sim1, sim2, n_steps):
     with h5py.File(sim1.output_filepath, 'r') as pp, h5py.File(sim2.output_filepath, 'r') as bh:
-        pos_data_pp = pp['results/positions']
-        pos_data_bh = bh['results/positions']
-        vel_data_pp = pp['results/velocities']
-        vel_data_bh = bh['results/velocities']
+        pos_data_pp = pp['results/position']
+        pos_data_bh = bh['results/position']
+        vel_data_pp = pp['results/velocity']
+        vel_data_bh = bh['results/velocity']
         for k in range(n_steps + 1):
             assert _are_vecs_close(pos_data_bh[k], pos_data_pp[k])
             assert _are_vecs_close(vel_data_bh[k], vel_data_pp[k])
@@ -132,9 +132,9 @@ def test_energy_conservation_barnes_hut():
         space = Space()
         space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
         sim_bh = sim.BHSimulation(space, bh_file, G, eps, 10 * cube_length, np.array((0., 0., 0.)), theta)
-        sim_bh.add_result('energies', (1,), n_steps)
+        sim_bh.add_result('energy', (1,), n_steps)
         sim_bh.run(n_steps, step_size)
         with h5py.File(sim_bh.output_filepath, 'r') as bh:
-            e_in = bh['results']['energies'][0]
-            e_fin = bh['results']['energies'][1]
+            e_in = bh['results']['energy'][0]
+            e_fin = bh['results']['energy'][1]
             assert np.abs(e_in - e_fin) / np.abs(e_in) <= 0.005

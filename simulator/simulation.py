@@ -33,10 +33,11 @@ class SimulationBase:
         self.eps = eps
         self._pb = ProgressBar(1, 40)
         self._kernel = None
-        self._results = {'positions': (1, self.space.r.shape), 'velocities': (1, self.space.v.shape)}
-        self._result_writer_map = {'positions': self._write_position,
-                                   'velocities': self._write_velocity,
-                                   'energies': self._write_total_energy}
+        self._results = {'position': (1, self.space.r.shape), 'velocity': (1, self.space.v.shape)}
+        self._result_writer_map = {'position': self._write_position,
+                                   'velocity': self._write_velocity,
+                                   'energy': self._write_total_energy,
+                                   'angular_momentum': self._write_angular_momentum}
 
     def add_result(self, res_name, res_shape, res_frequency=1):
         """
@@ -53,14 +54,18 @@ class SimulationBase:
         self._results[res_name] = (res_frequency, res_shape)
 
     def _write_position(self, hdf5_fobj, step_num):
-        hdf5_fobj['results/positions'][step_num, :] = self.space.r
+        hdf5_fobj['results/position'][step_num, :] = self.space.r
 
     def _write_velocity(self, hdf5_fobj, step_num):
-        hdf5_fobj['results/velocities'][step_num, :] = self.space.v
+        hdf5_fobj['results/velocity'][step_num, :] = self.space.v
 
     def _write_total_energy(self, hdf5_fobj, step_num):
-        hdf5_fobj['results/energies'][step_num] = kernum.calc_te_wrap(self.space.r, self.space.v, self.space.m, self.G,
+        hdf5_fobj['results/energy'][step_num] = kernum.calc_te_wrap(self.space.r, self.space.v, self.space.m, self.G,
                                                                       self.eps)
+
+    def _write_angular_momentum(self, hdf5_fobj, step_num):
+        hdf5_fobj['results/angular_momentum'][step_num] = kernum.calc_ang_mom_wrap(
+            self.space.r, self.space.v, self.space.m, self.G)
 
     def _write_results(self, hdf5_fobj, step_num):
         for res_name, res_data in self._results.items():
@@ -187,11 +192,11 @@ if __name__ == '__main__':
 
     ofp_bh = os.path.normpath(r'D:\Python_Projects\results\test_bh.hdf5')
     sim_bh = BHSimulation(space, ofp_bh, G, eps, 10 * cube_length, np.array((0., 0., 0.)), theta)
-    sim_bh.add_result('energies', (1,), n_steps)
+    sim_bh.add_result('energy', (1,), n_steps)
     sim_bh.run(n_steps, step_size)
 
     with h5py.File(sim_bh.output_filepath, 'r') as bh:
-        init = bh['results']['energies'][0]
-        fin = bh['results']['energies'][1]
+        init = bh['results']['energy'][0]
+        fin = bh['results']['energy'][1]
         print(init, fin)
         print(np.abs(init - fin) / np.abs(init))
