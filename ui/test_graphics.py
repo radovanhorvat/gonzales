@@ -17,9 +17,8 @@ if __name__ == '__main__':
     # def mass_func(pos_vec):
     #     return 1.0
     def mass_func(pos_vec):
-        t = np.random.uniform(10, 100)
         r = np.linalg.norm(pos_vec)
-        return 4. / 3 * r**3 * np.pi * 1.0e-4 * t
+        return 4. / 3 * r**3 * np.pi * 1.0e-4
 
     # space = Space()
     # space.add_cuboid(10000, np.array((0, 0, 0)), 1, 1, 1, vel_func, mass_func)
@@ -29,13 +28,13 @@ if __name__ == '__main__':
     # p = Points3DPlot(space)
     # p.show()
 
-    n = 1000
+    n = 100000
     cube_length = np.sqrt(n)
     G = 1.0
     eps = 1.0e-3
-    theta = 0.75
-    n_steps = 500
-    step_size = 0.01
+    theta = 1.0
+    n_steps = 1000
+    step_size = 0.001
 
     space = Space()
     #space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)

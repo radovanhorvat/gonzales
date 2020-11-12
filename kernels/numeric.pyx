@@ -88,6 +88,23 @@ cdef calc_te(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m, double G, double
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
+cdef calc_ang_momentum(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m):
+    """
+        Calculates angular momentum.
+    """
+    cdef int n = r.shape[0]
+    cdef DTYPE_t [:] angm = np.zeros(3)
+    cdef int i
+
+    for i in range(n):
+        angm[0] += m[i] * (r[i, 1] * v[i, 2] - r[i, 2] * v[i, 1])
+        angm[1] += m[i] * (r[i, 2] * v[i, 0] - r[i, 0] * v[i, 2])
+        angm[2] += m[i] * (r[i, 0] * v[i, 1] - r[i, 1] * v[i, 0])
+    return angm
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef advance_r(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:, :] accs, double dt):
     """
         Updates positions for time step dt.
@@ -140,9 +157,9 @@ def calc_te_wrap(r, v, m, G, eps):
     return calc_te(r, v, m, G, eps)
 
 
-##@timing
-#def advance_pp_wrap(r, v, m, accs, dt, G, eps):
-#    return advance_pp(r, v, m, accs, dt, G, eps)
+#@timing
+def calc_ang_mom_wrap(r, v, m):
+    return calc_ang_momentum(r, v, m)
 
 
 def advance_r_wrap(r, v, accs, dt):
