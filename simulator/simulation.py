@@ -104,7 +104,7 @@ class SimulationBase:
 
     def _write_angular_momentum(self, hdf5_fobj, step_num):
         hdf5_fobj['results/angular_momentum'][step_num] = kernum.calc_ang_mom_wrap(
-            self.space.r, self.space.v, self.space.m, self.G)
+            self.space.r, self.space.v, self.space.m)
 
     def _write_results(self, hdf5_fobj, step_num):
         for res_name, res_data in self._results.items():
@@ -218,12 +218,12 @@ if __name__ == '__main__':
     def mass_func(pos_vec):
         return 1.0
 
-    n = 10
+    n = 1000
     cube_length = np.sqrt(n)
     G = 1.0
     eps = 1.0e-3
     theta = 0.75
-    n_steps = 2
+    n_steps = 1000
     step_size = 0.001
 
     space = Space()
@@ -231,13 +231,15 @@ if __name__ == '__main__':
 
     ofp_bh = os.path.normpath(r'D:\Python_Projects\results\test_bh.hdf5')
     sim_bh = BHSimulation(space, ofp_bh, G, eps, 10 * cube_length, np.array((0., 0., 0.)), theta)
-    sim_bh.add_result('energy', (1,), n_steps)
+    #sim_bh.add_result('energy', (1,), n_steps)
+    sim_bh.add_result('angular_momentum', (3,), n_steps)
     sim_bh.run(n_steps, step_size)
 
     r = ResultReader(sim_bh.output_filepath)
     info = r.get_info()
-    pos = r.get_result('position', 1)
-    print(pos)
+    x = r.get_result('angular_momentum', 0)
+    y = r.get_result('angular_momentum', 1)
+    print(x, y)
     r.close()
 
 

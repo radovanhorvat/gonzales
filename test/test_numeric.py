@@ -54,3 +54,12 @@ def test_te():
     ke = kernum.calc_ke_wrap(v, m)
     te = kernum.calc_te_wrap(r, v, m, 1.0, 0.)
     np.testing.assert_equal(pe + ke, te)
+
+
+def test_ang_mom():
+    # test angular momentum
+    r = np.array([[0., 0., 0.], [1., 0., 0.], [1., 1., 1.]])
+    v = np.array([[-1., 1., 0.], [1., -1., 0.], [1., -2., 1.]])
+    m = np.array([1., 2., 3.])
+    am = kernum.calc_ang_mom_wrap(r, v, m)
+    np.testing.assert_equal(am, np.array([9., 0., -11.]))
