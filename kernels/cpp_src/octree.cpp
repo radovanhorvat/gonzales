@@ -132,38 +132,46 @@ void Octree::traverse_tree_st(OctNode* nd, std::vector<int>& indices) {
     if (indices.size() == 0)
         return;
     double r_x, r_y, r_z, dx, dy, dz, dist, f;
+    int x_ind, y_ind, z_ind;
     if (nd->is_leaf == true) {
         for(const int& i : indices) {
-            r_x = points[3 * i];
-            r_y = points[3 * i + 1];
-            r_z = points[3 * i + 2];
+            x_ind = 3 * i;
+            y_ind = 3 * i + 1;
+            z_ind = 3 * i + 2;
+            r_x = points[x_ind];
+            r_y = points[y_ind];
+            r_z = points[z_ind];
             dx = nd->R_x - r_x;
             dy = nd->R_y - r_y;
             dz = nd->R_z - r_z;
             dist = sqrt(dx * dx + dy * dy + dz * dz);
             f = G * nd->m / (dist * dist * dist + eps);
-            accs[3 * i] += f * dx;
-            accs[3 * i + 1] += f * dy;
-            accs[3 * i + 2] += f * dz;
+            accs[x_ind] += f * dx;
+            accs[y_ind] += f * dy;
+            accs[z_ind] += f * dz;
         }
         return;
     }
     std::vector<int> new_indices(indices.size());
     int k = 0;
+    double mac = nd->w / theta;
     for(const int& i : indices) {
-        r_x = points[3 * i];
-        r_y = points[3 * i + 1];
-        r_z = points[3 * i + 2];
+        x_ind = 3 * i;
+        y_ind = 3 * i + 1;
+        z_ind = 3 * i + 2;
+        r_x = points[x_ind];
+        r_y = points[y_ind];
+        r_z = points[z_ind];
         dx = nd->R_x - r_x;
         dy = nd->R_y - r_y;
         dz = nd->R_z - r_z;
         dist = sqrt(dx * dx + dy * dy + dz * dz);
         // case 1: MAC satisfied
-        if (nd->w / dist < theta) {
+        if (dist > mac) {
             f = G * nd->m / (dist * dist * dist + eps);
-            accs[3 * i] += f * dx;
-            accs[3 * i + 1] += f * dy;
-            accs[3 * i + 2] += f * dz;
+            accs[x_ind] += f * dx;
+            accs[y_ind] += f * dy;
+            accs[z_ind] += f * dz;
         }
         // case 2: MAC not satisfied
         else {

@@ -16,7 +16,7 @@ if __name__ == '__main__':
     def mass_func(pos_vec):
         return 1.0
 
-    n = 100000
+    n = 1000000
     cube_length = 1.0
     G = 1.0
     eps = 1.0e-3
