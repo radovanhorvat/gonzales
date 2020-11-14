@@ -14,9 +14,6 @@ Octree::Octree(double x, double y, double z, double w, double u_G, double u_eps,
 	accs = new double[3 * n]();
 	num_nodes = 1;
 	num_leaves = 0;
-	a_x = 0;
-	a_y = 0;
-	a_z = 0;
 	G = u_G;
 	eps = u_eps;
 	theta = u_theta;

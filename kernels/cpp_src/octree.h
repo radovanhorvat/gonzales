@@ -16,7 +16,7 @@ class Octree {
 		int n;
 		int num_nodes;
 		int num_leaves;
-		double a_x, a_y, a_z, G, eps, theta;
+		double G, eps, theta;
 		short int child_signs[8][3] = {{-1, -1, -1}, {-1, -1, 1}, {-1, 1, -1}, {-1, 1, 1},
 		                               {1, -1, -1}, {1, -1, 1}, {1, 1, -1}, {1, 1, 1}};
 
