@@ -196,4 +196,51 @@ void Octree::build() {
     }
 }
 
+void Octree::build_parallel() {
+    int n_cores = omp_get_max_threads();
+    // assign particles to threads and create root children
+    std::vector<std::vector<int>> thread_assign(n_cores);
+    std::vector<int> child_ids(n);
+    double f1 = 0.25 * root_node->w;
+    for (int i = 0; i < n; ++i) {
+        int k = 3 * i;
+        int child_id = root_node->get_child_id(points[k], points[k + 1], points[k + 2]);
+        child_ids[i] = child_id;
+        if (root_node->children[child_id] == NULL) {
+            double cc_x = root_node->c_x + f1 * child_signs[child_id][0];
+            double cc_y = root_node->c_y + f1 * child_signs[child_id][1];
+            double cc_z = root_node->c_z + f1 * child_signs[child_id][2];
+            double c_w = 0.5 * root_node->w;
+            root_node->children[child_id] = new OctNode(c_w, cc_x, cc_y, cc_z);
+            num_nodes += 1;
+        }
+        thread_assign[child_id % n_cores].push_back(i);
+    }
+
+    # pragma omp parallel num_threads(n_cores)
+    {
+        int tid = omp_get_thread_num();
+        int k;
+        for(const int& i : thread_assign[tid]) {
+            k = 3 * i;
+            insert_particle(root_node->children[child_ids[i]], points[k], points[k + 1], points[k + 2], masses[i]);
+        }
+    }
+
+    // update root node mass and com
+    root_node->is_empty = false;
+    for (int i = 0; i < 8; ++i) {
+        if (root_node->children[i] == NULL)
+            continue;
+        root_node->m += root_node->children[i]->m;
+        root_node->R_x += root_node->children[i]->R_x * root_node->children[i]->m;
+        root_node->R_y += root_node->children[i]->R_y * root_node->children[i]->m;
+        root_node->R_z += root_node->children[i]->R_z * root_node->children[i]->m;
+    }
+    root_node->R_x /= root_node->m;
+    root_node->R_y /= root_node->m;
+    root_node->R_z /= root_node->m;
+}
+
+
 }

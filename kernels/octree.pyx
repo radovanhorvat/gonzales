@@ -13,6 +13,7 @@ cdef extern from "octree.h" namespace "octree":
         Octree(double x, double y, double z, double w, double u_G, double u_eps, double u_theta, double* points,
 		       double* masses, int n_points)
         void build()
+        void build_parallel()
         void calculate_accs()
         void calculate_accs_st()
         void calculate_accs_st_parallel()
@@ -42,6 +43,9 @@ cdef class CPPOctree:
     cdef void build(self):
         self._thisptr.build()
 
+    cdef void build_parallel(self):
+        self._thisptr.build_parallel()
+
     cdef void calculate_accs(self):
         self._thisptr.calculate_accs()
 
@@ -55,7 +59,8 @@ cdef class CPPOctree:
 cdef CPPOctree build_tree(double w, double x, double y, double z, DTYPE_t [:, :] r, DTYPE_t [:] m, double G, double eps, double theta):
     cdef CPPOctree tree
     tree = CPPOctree(x, y, z, w, G, eps, theta, r, m, r.shape[0])
-    tree.build()
+    #tree.build()
+    tree.build_parallel()
     #print(tree.info())
     return tree
 

@@ -25,6 +25,7 @@ class Octree {
 		~Octree();
 
         void build();
+        void build_parallel();
 		void calculate_accs();
 		void calculate_accs_st();
 		void calculate_accs_st_parallel();
