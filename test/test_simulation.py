@@ -111,7 +111,7 @@ def test_sim_barnes_hut_theta_non_zero():
         space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
         space1 = deepcopy(space)
         sim_pp = sim.PPSimulation(space, pp_file, G, eps)
-        sim_bh = sim.BHSimulation(space1, bh_file, G, eps, cube_length, np.array((0., 0., 0.)), theta)
+        sim_bh = sim.BHSimulation(space1, bh_file, G, eps, 10 * cube_length, np.array((0., 0., 0.)), theta)
         sim_pp.run(n_steps, step_size)
         sim_bh.run(n_steps, step_size)
         # result comparsion
