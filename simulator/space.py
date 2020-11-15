@@ -1,3 +1,4 @@
+import h5py
 import numpy as np
 
 from simulator.utils import timing, to_cartesian
@@ -11,6 +12,25 @@ class Space:
         self.r = np.empty(shape=(0, 3))
         self.v = np.empty(shape=(0, 3))
         self.m = np.array([])
+
+    def to_hdf5(self, filepath):
+        """
+        Saves configuration to hdf5 file. Datasets are called "r", "v" and "m".
+        """
+        with h5py.File(filepath, 'w') as f:
+            f.create_dataset('r', self.r.shape)
+            f.create_dataset('v', self.v.shape)
+            f.create_dataset('m', self.m.shape)
+            f['r'][:] = self.r
+            f['v'][:] = self.v
+            f['m'][:] = self.m
+
+    def from_hdf5(self, filepath):
+        """
+        Reads data from hdf5 file.
+        """
+        with h5py.File(filepath, 'r') as f:
+            self.add_particles(f['r'][:], f['v'][:], f['m'][:])
 
     def add_particle(self, r, v, m):
         """
