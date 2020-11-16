@@ -24,8 +24,8 @@ if __name__ == '__main__':
 
     ofp = r'D:\Python_Projects\input_files\cuboid_10_6.hdf5'
     space = Space()
-    #space.from_hdf5(ofp)
-    space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
+    space.from_hdf5(ofp)
+    #space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
 
     #accs3 = kernbf.calculate_accs_pp_wrap(space.r, space.m, G, eps)
     #accs3 = kernoct.calc_accs_octree_wrap(cube_length, 0., 0., 0., space.r, space.m, G, eps, theta)
