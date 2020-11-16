@@ -131,19 +131,16 @@ void Octree::calculate_accs_st_parallel() {
 void Octree::traverse_tree_st(OctNode* nd, std::vector<int>& indices) {
     if (indices.size() == 0)
         return;
-    double r_x, r_y, r_z, dx, dy, dz, dist, dist_squared, f, mac;
+    double dx, dy, dz, dist, dist_squared, f, mac;
     int x_ind, y_ind, z_ind, k;
     if (nd->is_leaf == true) {
         for(const int& i : indices) {
             x_ind = 3 * i;
-            y_ind = 3 * i + 1;
-            z_ind = 3 * i + 2;
-            r_x = points[x_ind];
-            r_y = points[y_ind];
-            r_z = points[z_ind];
-            dx = nd->R_x - r_x;
-            dy = nd->R_y - r_y;
-            dz = nd->R_z - r_z;
+            y_ind = x_ind + 1;
+            z_ind = x_ind + 2;
+            dx = nd->R_x - points[x_ind];
+            dy = nd->R_y - points[y_ind];
+            dz = nd->R_z - points[z_ind];
             dist = sqrt(dx * dx + dy * dy + dz * dz);
             f = G * nd->m / (dist * dist * dist + eps);
             accs[x_ind] += f * dx;
@@ -157,14 +154,11 @@ void Octree::traverse_tree_st(OctNode* nd, std::vector<int>& indices) {
     mac = nd->w / theta * nd->w / theta;
     for(const int& i : indices) {
         x_ind = 3 * i;
-        y_ind = 3 * i + 1;
-        z_ind = 3 * i + 2;
-        r_x = points[x_ind];
-        r_y = points[y_ind];
-        r_z = points[z_ind];
-        dx = nd->R_x - r_x;
-        dy = nd->R_y - r_y;
-        dz = nd->R_z - r_z;
+        y_ind = x_ind + 1;
+        z_ind = x_ind + 2;
+        dx = nd->R_x - points[x_ind];
+        dy = nd->R_y - points[y_ind];
+        dz = nd->R_z - points[z_ind];
         dist_squared = dx * dx + dy * dy + dz * dz;
         // case 1: MAC satisfied
         if (dist_squared > mac) {
