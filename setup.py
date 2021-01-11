@@ -1,28 +1,51 @@
 import os
+import sys
 import numpy as np
 from Cython.Build import cythonize
 from setuptools import setup, Extension
 
+# python3 -m venv env
+# source env/bin/activate (deactivate with: deactivate)
 # pip install -r requirements.txt
 # pip install -e .
 # python setup.py build_ext --build-lib=kernels --> this should be added to setup
 
+def get_compile_args():
+    if sys.platform == 'linux':
+        return ['-fopenmp']
+    elif sys.platform == 'win32':
+        return ['/openmp']
+    return []
+
+
+def get_link_args():
+    if sys.platform == 'linux':
+        return ['-fopenmp']
+    elif sys.platform == 'win32':
+        return []
+    return []
+    
+
+compile_args = get_compile_args()
+link_args = get_link_args()
+
+
 extensions = [Extension("brute_force", sources=[os.path.join('kernels', 'brute_force.pyx'),
                                                 os.path.join('kernels', 'cpp_src', 'brute_force.cpp')],
-                        extra_compile_args=['/openmp'],
-                        #extra_link_args=['/openmp'],
+                        extra_compile_args=compile_args,
+                        extra_link_args=link_args,
                         include_dirs=['kernels', os.path.join('kernels', 'cpp_src'), np.get_include()],
                         language="c++"),
               Extension("octree", sources=[os.path.join('kernels', 'octree.pyx'),
                                            os.path.join('kernels', 'cpp_src', 'octnode.cpp'),
                                            os.path.join('kernels', 'cpp_src', 'octree.cpp')],
                         include_dirs=['kernels', os.path.join('kernels', 'cpp_src'), np.get_include()],
-                        extra_compile_args=['/openmp'],
-                        #extra_link_args=['/openmp'],
+                        extra_compile_args=compile_args,
+                        extra_link_args=link_args,
                         language="c++"),
               Extension("numeric", sources=[os.path.join('kernels', 'numeric.pyx')],
-                        extra_compile_args=['/openmp'],
-                        #extra_link_args=['/openmp'],
+                        extra_compile_args=compile_args,
+                        extra_link_args=link_args,
                         include_dirs=['kernels', np.get_include()]),
               ]
 
