@@ -4,6 +4,7 @@ from simulator.space import Space
 from simulator.utils import calculate_relative_error
 import kernels.brute_force as kernbf
 import kernels.octree as kernoct
+import kernels.octree_c as kernoct_c
 
 
 def vel_func(pos_vec):
@@ -75,6 +76,21 @@ def test_barnes_hut_theta_zero():
         np.testing.assert_almost_equal(accs1, accs2)
 
 
+def test_barnes_hut_theta_zero_C():
+    # test Barnes-Hut C kernel relative to Cython brute force kernel, for theta = 0
+    G = 1.0
+    eps = 1.0e-3
+    theta = 0.
+    particle_nums = [2, 10, 100, 1000, 5000, 10000]    
+    for num in particle_nums:
+        cube_length = int(np.sqrt(num))
+        space = Space()
+        space.add_cuboid(num, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
+        accs1 = kernbf.calculate_accs_pp_wrap(space.r, space.m, G, eps)
+        accs2 = kernoct_c.calc_accs_wrap_wrap_c(num, space.r, space.m, G, eps, theta, cube_length, 0., 0., 0.)
+        np.testing.assert_almost_equal(accs1, accs2)
+
+
 def test_barnes_hut_theta_non_zero():
     # test Barnes-Hut C++ kernel relative to Cython brute force kernel, for theta > 0
     G = 1.0
@@ -87,5 +103,21 @@ def test_barnes_hut_theta_non_zero():
         space.add_cuboid(num, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
         accs2 = kernbf.calculate_accs_pp_wrap(space.r, space.m, G, eps)
         accs3 = kernoct.calc_accs_octree(cube_length, 0., 0., 0., space.r, space.m, G, eps, theta)
+        err, std_err = calculate_relative_error(accs3, accs2)
+        assert err < 0.02 and std_err < 0.02
+
+
+def test_barnes_hut_theta_non_zero_C():
+    # test Barnes-Hut C kernel relative to Cython brute force kernel, for theta > 0
+    G = 1.0
+    eps = 1.0e-3
+    theta = 0.5
+    particle_nums = [2, 10, 100, 1000, 5000, 10000]
+    for num in particle_nums:
+        cube_length = int(np.sqrt(num))
+        space = Space()
+        space.add_cuboid(num, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
+        accs2 = kernbf.calculate_accs_pp_wrap(space.r, space.m, G, eps)
+        accs3 = kernoct_c.calc_accs_wrap_wrap_c(num, space.r, space.m, G, eps, theta, cube_length, 0., 0., 0.)
         err, std_err = calculate_relative_error(accs3, accs2)
         assert err < 0.02 and std_err < 0.02
