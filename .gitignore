@@ -4,7 +4,7 @@ log.txt
 *.pyc
 *.so
 
-nbvenv/
+venv/
 
 build/
 kernels/*.pyd
