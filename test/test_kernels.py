@@ -87,7 +87,7 @@ def test_barnes_hut_theta_zero_C():
         space = Space()
         space.add_cuboid(num, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
         accs1 = kernbf.calculate_accs_pp_wrap(space.r, space.m, G, eps)
-        accs2 = kernoct_c.calc_accs_wrap_wrap_c(num, space.r, space.m, G, eps, theta, cube_length, 0., 0., 0.)
+        accs2 = kernoct_c.calc_accs_wrap_wrap_c(cube_length, 0., 0., 0., space.r, space.m, G, eps, theta)
         np.testing.assert_almost_equal(accs1, accs2)
 
 
@@ -118,6 +118,6 @@ def test_barnes_hut_theta_non_zero_C():
         space = Space()
         space.add_cuboid(num, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
         accs2 = kernbf.calculate_accs_pp_wrap(space.r, space.m, G, eps)
-        accs3 = kernoct_c.calc_accs_wrap_wrap_c(num, space.r, space.m, G, eps, theta, cube_length, 0., 0., 0.)
+        accs3 = kernoct_c.calc_accs_wrap_wrap_c(cube_length, 0., 0., 0., space.r, space.m, G, eps, theta)
         err, std_err = calculate_relative_error(accs3, accs2)
         assert err < 0.02 and std_err < 0.02

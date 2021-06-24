@@ -6,6 +6,7 @@ import numpy as np
 
 import kernels.brute_force as kernbf
 import kernels.octree as kernoct
+import kernels.octree_c as kernoct_c
 import kernels.numeric as kernum
 from simulator.utils import ProgressBar
 from simulator.space import Space
@@ -200,7 +201,8 @@ class BHSimulation(SimulationBase):
         self.root_width = root_width
         self.root_center = root_center
         self.theta = theta
-        self.set_kernel(kernoct.calc_accs_octree_wrap)
+        #self.set_kernel(kernoct.calc_accs_octree_wrap)
+        self.set_kernel(kernoct_c.calc_accs_wrap_wrap_c)
 
     def __repr__(self):
         return '<{}[{}] N={}, type={}>'.format(type(self).__name__, id(self), len(self.space), self.type)
@@ -229,7 +231,8 @@ if __name__ == '__main__':
     space = Space()
     space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
 
-    ofp_bh = os.path.normpath(r'D:\Python_Projects\results\test_bh.hdf5')
+    ofp_bh = os.path.abspath(os.path.join(os.path.dirname(__file__), 'output', 'test_bh.hdf5'))
+    #ofp_bh = os.path.normpath(r'D:\Python_Projects\results\test_bh.hdf5')
     sim_bh = BHSimulation(space, ofp_bh, G, eps, 10 * cube_length, np.array((0., 0., 0.)), theta)
     #sim_bh.add_result('energy', (1,), n_steps)
     sim_bh.add_result('angular_momentum', (3,), n_steps)

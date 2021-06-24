@@ -19,5 +19,5 @@ cdef calc_accs_wrap_wrap(int n, DTYPE_t [:, :] r, DTYPE_t [:] m, double G, doubl
 
 
 #@timing
-def calc_accs_wrap_wrap_c(n, r, m, G, eps, theta, w, r_x, r_y, r_z):
-	return calc_accs_wrap_wrap(n, r, m, G, eps, theta, w, r_x, r_y, r_z)
+def calc_accs_wrap_wrap_c(w, r_x, r_y, r_z, r, m, G, eps, theta):
+	return calc_accs_wrap_wrap(r.shape[0], r, m, G, eps, theta, w, r_x, r_y, r_z)
