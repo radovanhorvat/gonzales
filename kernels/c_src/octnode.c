@@ -80,7 +80,8 @@ void octnode_insert_point(octnode* nd, particle* pnt) {
 		nd->R_x *= ff;
 		nd->R_y *= ff;
 		nd->R_z *= ff;
-		nd->leaf_cap -= 1;		
+		nd->leaf_cap -= 1;
+		free(nd->pnts);
 	}
 	if (nd->leaf_cap == -1) {
 		double pmass = pnt->m;
@@ -243,7 +244,6 @@ void octree_calc_accs_omp(octnode* nd, particle** psub, int k, params* par) {
         particle** new_psub = make_slice(psub, start_ind, end_ind);
         octree_calc_accs(nd, new_psub, m, par);
         free(new_psub);
-
     }
 }
 
