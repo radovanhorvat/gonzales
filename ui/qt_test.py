@@ -2,9 +2,10 @@ import h5py
 import numpy as np
 
 from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QWidget, QPushButton, QLabel, QGroupBox,
-                             QAction, QFileDialog, QApplication, QVBoxLayout)
+                             QAction, QFileDialog, QApplication, QVBoxLayout, QSlider)
 from PyQt5.QtGui import QIcon
 from pyqtgraph.Qt import QtGui, QtCore
+from PyQt5.QtCore import Qt
 
 import sys
 from pathlib import Path
@@ -31,11 +32,12 @@ class MainWidget(QWidget):
         play_button = QPushButton('Play', self)
         play_button.clicked.connect(self.parent().on_play)
 
-        pause_button = QPushButton('Pause', self)
-        pause_button.clicked.connect(self.parent().on_pause)
+        self.pause_button = QPushButton('Pause', self)
+        self.pause_button.clicked.connect(self.parent().on_pause)
+
 
         self.layout.addWidget(play_button)
-        self.layout.addWidget(pause_button)
+        self.layout.addWidget(self.pause_button)
         self.layout.addWidget(self.view_widget)
         self.info_label = QLabel()
         self.params_label = QLabel()
@@ -50,7 +52,7 @@ class MainWidget(QWidget):
 
         self.info_label.setMaximumHeight(40)
         self.params_label.setMaximumHeight(40)
-        self.setLayout(self.layout)
+        self.setLayout(self.layout)    
 
 
 class NBodyViewer(QMainWindow):
@@ -120,10 +122,12 @@ class NBodyViewer(QMainWindow):
     def on_pause(self):
         if self._is_playing:
             self._is_playing = False
+            self.main_widget.pause_button.setText('Resume')
             self._timer.stop()
             return
         self._timer.start(50)
         self._is_playing = True
+        self.main_widget.pause_button.setText('Pause')
 
     def on_file_open(self):
         home_dir = str(Path.home())
