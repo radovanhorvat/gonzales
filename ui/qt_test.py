@@ -31,7 +31,11 @@ class MainWidget(QWidget):
         play_button = QPushButton('Play', self)
         play_button.clicked.connect(self.parent().on_play)
 
+        pause_button = QPushButton('Pause', self)
+        pause_button.clicked.connect(self.parent().on_pause)
+
         self.layout.addWidget(play_button)
+        self.layout.addWidget(pause_button)
         self.layout.addWidget(self.view_widget)
         self.info_label = QLabel()
         self.params_label = QLabel()
@@ -57,10 +61,11 @@ class NBodyViewer(QMainWindow):
         self._timer = QtCore.QTimer()
         self._cnt = 0
         self._num_steps = 0
-        self._color = (.9, .9, .1, .7)
+        self._color = (.9, .9, .1, .7)        
         self.init_ui()
         if filename:
             self._set_data_from_file(filename)
+        self._is_playing = False
 
     def _refresh_status_bar(self):
         self.statusBar().showMessage('Loaded file: {}'.format(self._filename))
@@ -78,13 +83,18 @@ class NBodyViewer(QMainWindow):
         play = QAction('Play', self)
         play.setStatusTip('Run animation')
 
+        quit = QAction('Quit', self)
+        quit.setStatusTip('Close viewer')
+
         openFile.triggered.connect(self.on_file_open)
         play.triggered.connect(self.on_play)
+        quit.triggered.connect(self.close)
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(openFile)
         fileMenu.addAction(play)
+        fileMenu.addAction(quit)
 
         self.setGeometry(50, 50, 1600, 900)
         self.setWindowTitle('N-body visualization')
@@ -105,6 +115,15 @@ class NBodyViewer(QMainWindow):
         self._cnt = 0
         self._timer.timeout.connect(self._update_view)
         self._timer.start(50)
+        self._is_playing = True
+
+    def on_pause(self):
+        if self._is_playing:
+            self._is_playing = False
+            self._timer.stop()
+            return
+        self._timer.start(50)
+        self._is_playing = True
 
     def on_file_open(self):
         home_dir = str(Path.home())
