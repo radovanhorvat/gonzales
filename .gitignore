@@ -3,6 +3,7 @@ log.txt
 .idea
 *.pyc
 *.so
+*.hdf5
 
 venv/
 output/

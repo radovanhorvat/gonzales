@@ -9,26 +9,24 @@ from pyqtgraph.Qt import QtGui, QtCore
 import sys
 from pathlib import Path
 
-import pyqtgraph.opengl as gl
-
 from simulator.simulation import ResultReader
 
+import vispy
+import vispy.scene
+from vispy.scene import visuals
 
-class ViewWidget(gl.GLViewWidget):
-    def __init__(self):
-        super().__init__()
-        self.opts['distance'] = 10
-        self.setWindowTitle('3D space')
-        self.points = gl.GLScatterPlotItem(pos=np.empty(shape=(0, 3)))
-        self.addItem(self.points)
-        self.show()
 
 
 class MainWidget(QWidget):
     def __init__(self, parent):
         super(MainWidget, self).__init__(parent)
         self.layout = QVBoxLayout(self)
-        self.view_widget = ViewWidget()
+        canvas = vispy.scene.SceneCanvas(keys='interactive', show=True)
+        view = canvas.central_widget.add_view()
+        view.camera = 'turntable'
+        self.scatter = visuals.Markers()
+        view.add(self.scatter)
+        self.view_widget = canvas.native
 
         play_button = QPushButton('Play', self)
         play_button.clicked.connect(self.parent().on_play)
@@ -59,7 +57,7 @@ class NBodyViewer(QMainWindow):
         self._timer = QtCore.QTimer()
         self._cnt = 0
         self._num_steps = 0
-        self._color = (.5, .3, .1, .7)
+        self._color = (.9, .9, .1, .7)
         self.init_ui()
         if filename:
             self._set_data_from_file(filename)
@@ -97,7 +95,7 @@ class NBodyViewer(QMainWindow):
         if self._cnt > self._num_steps:
             return
         pos_data = self._reader.get_result('position', self._cnt)
-        self.main_widget.view_widget.points.setData(pos=pos_data, size=3, color=self._color)
+        self.main_widget.scatter.set_data(pos_data, edge_color=None, face_color=self._color, size=4)
         self.main_widget.params_label.setText('Step: {}'.format(self._cnt))
 
     def on_play(self):
@@ -120,7 +118,7 @@ class NBodyViewer(QMainWindow):
         self._filename = filename
         self._reader = ResultReader(filename)
         pos_data = self._reader.get_result('position', self._cnt)
-        self.main_widget.view_widget.points.setData(pos=pos_data, size=3, color=self._color)
+        self.main_widget.scatter.set_data(pos_data, edge_color=None, face_color=self._color, size=4)
         self._refresh_status_bar()
         info_str = 'N: {}, G: {}, eps: {}, type: {}'.format(
             str(self._reader.get_info()['number_of_particles'][()]),

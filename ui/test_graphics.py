@@ -41,7 +41,7 @@ if __name__ == '__main__':
     space.add_sphere(n, np.array((0., 0., 0.)), 1., vel_func, mass_func)
     #space.add_sphere(n, np.array((-2., 0., 0.)), .5, vel_func, mass_func)
 
-    ofp = os.path.normpath(r'D:\Python_Projects\results\test_bh_01.hdf5')
+    ofp = os.path.abspath(os.path.join(os.path.dirname(__file__), 'output', 'test_01.hdf5'))
     #s1 = PPSimulation(space, ofp, G, eps)
     s1 = BHSimulation(space, ofp, G, eps, 100000., np.array((0., 0., 0.)), theta)
     #s1.add_result('energies', (1,), 1)
