@@ -140,7 +140,7 @@ class MainWidget(QWidget):
 
 
 class NBodyViewer(QMainWindow):
-    def __init__(self, filename=''):
+    def __init__(self, filename='', body_sizes=4):
         super().__init__()
         self._filename = None
         self._reader = None
@@ -148,6 +148,8 @@ class NBodyViewer(QMainWindow):
         self._cnt = 0
         self._num_steps = 0
         self._color = (.9, .9, .1, .7)        
+        self._sizes = body_sizes
+
         self.init_ui()
         if filename:
             self._set_data_from_file(filename)
@@ -191,7 +193,7 @@ class NBodyViewer(QMainWindow):
         if self._cnt > self._num_steps:
             return
         pos_data = self._reader.get_result('position', self._cnt)
-        self.main_widget.scatter.set_data(pos_data, edge_color=None, face_color=self._color, size=4)
+        self.main_widget.scatter.set_data(pos_data, edge_color=None, face_color=self._color, size=self._sizes)
         self.main_widget.params_label.setText('Step: {}'.format(self._cnt))
 
     def on_play(self):
@@ -238,7 +240,7 @@ class NBodyViewer(QMainWindow):
         self._filename = filename
         self._reader = ResultReader(filename)
         pos_data = self._reader.get_result('position', self._cnt)
-        self.main_widget.scatter.set_data(pos_data, edge_color=None, face_color=self._color, size=4)
+        self.main_widget.scatter.set_data(pos_data, edge_color=None, face_color=self._color, size=self._sizes)
         self._refresh_status_bar()
         info_str = 'N: {}, G: {}, eps: {}, type: {}'.format(
             str(self._reader.get_info()['number_of_particles'][()]),
@@ -262,9 +264,9 @@ class NBodyViewer(QMainWindow):
         super(QMainWindow, self).closeEvent(event)
 
 
-def run_viewer(filename=''):
+def run_viewer(filename='', body_sizes=4):
     app = QApplication(sys.argv)
-    nbv = NBodyViewer(filename)
+    nbv = NBodyViewer(filename, body_sizes)
     sys.exit(app.exec_())
 
 
