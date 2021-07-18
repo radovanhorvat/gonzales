@@ -4,7 +4,7 @@ import h5py
 import numpy as np
 
 from simulator.space import Space
-from simulator.simulation import PPSimulation, BHSimulation
+from simulator.simulation import PPSimulation, BHSimulation, ResultReader
 
 from ui.qt_test import run_viewer
 
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     # p = Points3DPlot(space)
     # p.show()
 
-    n = 10000
+    n = 1000
     cube_length = np.sqrt(n)
     G = 1.0
     eps = 1.0e-3
@@ -44,8 +44,15 @@ if __name__ == '__main__':
     ofp = os.path.abspath(os.path.join(os.path.dirname(__file__), 'output', 'test_01.hdf5'))
     #s1 = PPSimulation(space, ofp, G, eps)
     s1 = BHSimulation(space, ofp, G, eps, 100000., np.array((0., 0., 0.)), theta)
-    #s1.add_result('energies', (1,), 1)
+    s1.add_result('velocity', (n, 3), res_frequency=50)
+    #s1.add_result('energy', (1,))
     s1.run(n_steps, step_size)
+
+    #r = ResultReader(s1.output_filepath)
+    #print(r.get_dataset_names())
+    # x = r.get_result('velocity', 10)
+    # print(x)
+    #r.close()
 
     #anim = Points3DAnimation(ofp)
     #anim.animate()

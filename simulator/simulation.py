@@ -46,6 +46,18 @@ class ResultReader:
         """
         return self._fobj['results'][result_name][step_num]
 
+    def get_result_num_steps(self, result_name):
+        """
+
+        :param result_name: str, name of result, must be supported by simulation
+        
+        Returns number of steps for which result is calculated
+        """
+        return self._fobj['results'][result_name].shape[0]
+
+    def get_result_names(self):
+        return list(self._fobj['results'].keys())
+
     def close(self):
         """
         Closes the hdf5 file. This should be called when the reader is not needed anymore.

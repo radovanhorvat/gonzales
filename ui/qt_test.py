@@ -2,7 +2,8 @@ import h5py
 import numpy as np
 
 from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QWidget, QPushButton, QLabel, QGroupBox,
-                             QAction, QFileDialog, QApplication, QVBoxLayout, QSlider)
+                             QAction, QFileDialog, QApplication, QVBoxLayout, QSlider, QTabWidget, QTableWidget,
+                             QTableWidgetItem, QComboBox, QHBoxLayout)
 from PyQt5.QtGui import QIcon
 from pyqtgraph.Qt import QtGui, QtCore
 from PyQt5.QtCore import Qt
@@ -16,12 +17,58 @@ import vispy
 import vispy.scene
 from vispy.scene import visuals
 
+ 
+class TableView(QTableWidget):        
+    def set_data(self, res_data, res_headers=None):        
+        n, m = res_data.shape
+        self.setRowCount(n)
+        self.setColumnCount(m)
+        for i in range(n):            
+            for j in range(m):
+                newitem = QTableWidgetItem(str(res_data[i][j]))
+                #newitem.setFlags(QtCore.Qt.ItemIsEnabled)
+                self.setItem(i, j, newitem)
+        if res_headers:
+            self.setHorizontalHeaderLabels(res_headers)
+        self.resizeColumnsToContents()
+        self.resizeRowsToContents()
+
+
+class SliderLabelWidget(QWidget):
+    def __init__(self, parent):
+        super(SliderLabelWidget, self).__init__(parent)
+        hbox = QHBoxLayout()
+
+        self.sld = QSlider(Qt.Horizontal, self)
+        self.sld.setRange(0, 100)
+        self.sld.setFocusPolicy(Qt.NoFocus)
+        self.sld.setPageStep(5)
+
+        self.label = QLabel('0', self)
+
+        hbox.addWidget(self.sld)
+        hbox.addSpacing(15)
+        hbox.addWidget(self.label)
+
+        self.setLayout(hbox)
+   
 
 
 class MainWidget(QWidget):
     def __init__(self, parent):
         super(MainWidget, self).__init__(parent)
         self.layout = QVBoxLayout(self)
+
+        self.tabs = QTabWidget()
+        self.tab1 = QWidget()
+        self.tab2 = QWidget()
+
+        self.tabs.addTab(self.tab1, "Animation")
+        self.tabs.addTab(self.tab2, "Results")
+
+        self.tab1.layout = QVBoxLayout(self)
+        self.tab2.layout = QVBoxLayout(self)
+
         canvas = vispy.scene.SceneCanvas(keys='interactive', show=True)
         view = canvas.central_widget.add_view()
         view.camera = 'turntable'
@@ -34,11 +81,11 @@ class MainWidget(QWidget):
 
         self.pause_button = QPushButton('Pause', self)
         self.pause_button.clicked.connect(self.parent().on_pause)
-
-
-        self.layout.addWidget(play_button)
-        self.layout.addWidget(self.pause_button)
-        self.layout.addWidget(self.view_widget)
+        
+        # tab1
+        self.tab1.layout.addWidget(play_button)
+        self.tab1.layout.addWidget(self.pause_button)
+        self.tab1.layout.addWidget(self.view_widget)
         self.info_label = QLabel()
         self.params_label = QLabel()
 
@@ -48,14 +95,31 @@ class MainWidget(QWidget):
         info_box.addWidget(self.params_label)
         info_groupbox.setLayout(info_box)
         info_groupbox.setMaximumHeight(80)
-        self.layout.addWidget(info_groupbox)
+        self.tab1.layout.addWidget(info_groupbox)
+        self.tab1.setLayout(self.tab1.layout)
 
         self.info_label.setMaximumHeight(40)
         self.params_label.setMaximumHeight(40)
+
+        # tab2
+        self.combo = QComboBox(self)
+        self.table = TableView()
+        self.slider = SliderLabelWidget(self)
+        self.combo.activated.connect(self.parent().on_combo_activated)
+        self.slider.sld.valueChanged.connect(self.parent().on_slider_changed)
+
+        self.tab2.layout.addWidget(self.combo)
+        self.tab2.layout.addWidget(self.slider)
+        self.tab2.layout.addWidget(self.table)
+        self.tab2.setLayout(self.tab2.layout)
+
+        self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)    
 
 
 class NBodyViewer(QMainWindow):
+    _RES_HEADER_MAP = {'position': ['r_x', 'r_y', 'r_z'], 'velocity': ['v_x', 'v_y', 'v_z'], 'energy': ['E']}
+
     def __init__(self, filename=''):
         super().__init__()
         self._filename = None
@@ -137,6 +201,18 @@ class NBodyViewer(QMainWindow):
         self._cnt = 0
         self._set_data_from_file(fname[0])
 
+    def on_combo_activated(self):
+        res_name = str(self.main_widget.combo.currentText())
+        res_data = self._reader.get_result(res_name, 0)
+        self.main_widget.table.set_data(res_data, self._RES_HEADER_MAP[res_name])
+        self.main_widget.slider.sld.setRange(0, self._reader.get_result_num_steps(res_name) - 1)
+
+    def on_slider_changed(self, value):
+        self.main_widget.slider.label.setText(str(value))
+        res_name = str(self.main_widget.combo.currentText())
+        res_data = self._reader.get_result(res_name, value)
+        self.main_widget.table.set_data(res_data)
+
     def _set_data_from_file(self, filename):
         self._filename = filename
         self._reader = ResultReader(filename)
@@ -151,6 +227,12 @@ class NBodyViewer(QMainWindow):
         )
         self._num_steps = self._reader.get_info()['number_of_steps'][()]
         self.main_widget.info_label.setText(info_str)
+        for res_name in self._reader.get_result_names():
+            self.main_widget.combo.addItem(res_name)
+        res_name = str(self.main_widget.combo.currentText())
+        res_data = self._reader.get_result(res_name, 0)
+        self.main_widget.table.set_data(res_data, self._RES_HEADER_MAP[res_name])
+        self.main_widget.slider.sld.setRange(0, self._reader.get_result_num_steps(res_name) - 1)
 
     def closeEvent(self, event):
         self._timer.stop()
