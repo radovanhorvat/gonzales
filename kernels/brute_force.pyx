@@ -58,13 +58,13 @@ cdef calculate_accs_pp(DTYPE_t [:, :] r, DTYPE_t[:] m, double G, double eps):
                 d = sqrt(ds)
                 f = 1.0 / (d * d * d + eps)
                 # update accs
-                accs[i, 0] += dx * f * k1
-                accs[i, 1] += dy * f * k1
-                accs[i, 2] += dz * f * k1
+                accs[i, 0] += dx * f * k2
+                accs[i, 1] += dy * f * k2
+                accs[i, 2] += dz * f * k2
                 # update temporary array - we need this to avoid thread race
-                temp[j, p, 0] -= dx * f * k2
-                temp[j, p, 1] -= dy * f * k2
-                temp[j, p, 2] -= dz * f * k2
+                temp[j, p, 0] -= dx * f * k1
+                temp[j, p, 1] -= dy * f * k1
+                temp[j, p, 2] -= dz * f * k1
 
     accs += np.sum(temp, axis=1)
 

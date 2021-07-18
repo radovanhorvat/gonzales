@@ -149,6 +149,7 @@ class NBodyViewer(QMainWindow):
         self._num_steps = 0
         self._color = (.9, .9, .1, .7)        
         self._sizes = body_sizes
+        self._scale = 1.0e-11
 
         self.init_ui()
         if filename:
@@ -193,7 +194,7 @@ class NBodyViewer(QMainWindow):
         if self._cnt > self._num_steps:
             return
         pos_data = self._reader.get_result('position', self._cnt)
-        self.main_widget.scatter.set_data(pos_data, edge_color=None, face_color=self._color, size=self._sizes)
+        self.main_widget.scatter.set_data(pos_data * self._scale, edge_color=None, face_color=self._color, size=self._sizes)
         self.main_widget.params_label.setText('Step: {}'.format(self._cnt))
 
     def on_play(self):
@@ -243,7 +244,7 @@ class NBodyViewer(QMainWindow):
         self._filename = filename
         self._reader = ResultReader(filename)
         pos_data = self._reader.get_result('position', self._cnt)
-        self.main_widget.scatter.set_data(pos_data, edge_color=None, face_color=self._color, size=self._sizes)
+        self.main_widget.scatter.set_data(pos_data * self._scale, edge_color=None, face_color=self._color, size=self._sizes)
         self._refresh_status_bar()
         info_str = 'N: {}, G: {}, eps: {}, type: {}'.format(
             str(self._reader.get_info()['number_of_particles'][()]),

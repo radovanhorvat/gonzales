@@ -45,6 +45,12 @@ def test_brute_force_basic():
     space.add_particle(np.array((1., 0., 0.)), np.array((0., 0., 0.)), 1.0)
     accs = kernbf.calculate_accs_pp_wrap(space.r, space.m, G, eps)
     np.testing.assert_almost_equal(accs, np.array([[1., 0., 0.], [-1., 0., 0.]]))
+    # 3. two particles of unequal masses on x-axis at distance 1.0
+    space.clear_particles()
+    space.add_particle(np.array((0., 0., 0.)), np.array((0., 0., 0.)), 1.0)
+    space.add_particle(np.array((1., 0., 0.)), np.array((0., 0., 0.)), 0.5)
+    accs = kernbf.calculate_accs_pp_wrap(space.r, space.m, G, eps)
+    np.testing.assert_almost_equal(accs, np.array([[0.5, 0., 0.], [-1, 0., 0.]]))
 
 
 def test_brute_force_cpp():
