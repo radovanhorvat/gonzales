@@ -140,9 +140,6 @@ class MainWidget(QWidget):
 
 
 class NBodyViewer(QMainWindow):
-    _RES_HEADER_MAP = {'position': ['r_x', 'r_y', 'r_z'], 'velocity': ['v_x', 'v_y', 'v_z'], 'energy': ['E'],
-                        'angular_momentum': ['L_x', 'L_y', 'L_z']}
-
     def __init__(self, filename=''):
         super().__init__()
         self._filename = None
@@ -227,15 +224,14 @@ class NBodyViewer(QMainWindow):
     def on_combo_activated(self):
         res_name = str(self.main_widget.combo.wgt.currentText())
         res_data = self._reader.get_result(res_name, 0)
-        #self.main_widget.table.set_data(res_data, self._RES_HEADER_MAP[res_name])
         self.main_widget.table.setModel(TableModel(res_data))
         self.main_widget.slider.wgt.sld.setRange(0, self._reader.get_result_num_steps(res_name) - 1)
+        self.main_widget.slider.wgt.sld.setValue(0)
 
     def on_slider_changed(self, value):
         self.main_widget.slider.wgt.label.setText(str(value))
         res_name = str(self.main_widget.combo.wgt.currentText())
         res_data = self._reader.get_result(res_name, value)
-        #self.main_widget.table.set_data(res_data)
         self.main_widget.table.setModel(TableModel(res_data))
 
     def _set_data_from_file(self, filename):
@@ -257,7 +253,6 @@ class NBodyViewer(QMainWindow):
         res_name = str(self.main_widget.combo.wgt.currentText())
         res_data = self._reader.get_result(res_name, 0)
         self.main_widget.table.setModel(TableModel(res_data))
-        #self.main_widget.table.set_data(res_data, self._RES_HEADER_MAP[res_name])
         self.main_widget.slider.wgt.sld.setRange(0, self._reader.get_result_num_steps(res_name) - 1)
 
     def closeEvent(self, event):
