@@ -2,8 +2,8 @@ import h5py
 import numpy as np
 
 from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QWidget, QPushButton, QLabel, QGroupBox,
-                             QAction, QFileDialog, QApplication, QVBoxLayout, QSlider, QTabWidget, QTableWidget,
-                             QTableWidgetItem, QComboBox, QHBoxLayout)
+                             QAction, QFileDialog, QApplication, QVBoxLayout, QSlider, QTabWidget,
+                             QTableWidgetItem, QComboBox, QHBoxLayout, QTableView)
 from PyQt5.QtGui import QIcon
 from pyqtgraph.Qt import QtGui, QtCore
 from PyQt5.QtCore import Qt
@@ -17,29 +17,27 @@ import vispy
 import vispy.scene
 from vispy.scene import visuals
 
- 
-class TableView(QTableWidget):        
-    def set_data(self, res_data, res_headers=None):        
-        def _item_getter(res_data, i, j):
-            if len(res_data.shape) > 1:
-                return str(res_data[i][j])
-            return str(res_data[j])
 
-        def _get_table_shape(res_data):
-            if len(res_data.shape) > 1:
-                return res_data.shape
-            return 1, res_data.shape[0]
+class TableModel(QtCore.QAbstractTableModel):
+    def __init__(self, data):
+        super(TableModel, self).__init__()
+        self._data = data
 
-        n, m = _get_table_shape(res_data)
-        self.setRowCount(n)
-        self.setColumnCount(m)
-        for i in range(n):            
-            for j in range(m):
-                newitem = QTableWidgetItem(_item_getter(res_data, i, j))
-                #newitem.setFlags(QtCore.Qt.ItemIsEnabled)
-                self.setItem(i, j, newitem)
-        if res_headers:
-            self.setHorizontalHeaderLabels(res_headers)
+    def data(self, index, role):
+        if role == Qt.DisplayRole:
+            if len(self._data.shape) > 1:
+                return str(self._data[index.row()][index.column()])
+            return str(self._data[index.column()])
+
+    def rowCount(self, index):
+        if len(self._data.shape) > 1:
+            return self._data.shape[0]
+        return 1
+
+    def columnCount(self, index):
+        if len(self._data.shape) > 1:
+            return self._data.shape[1]
+        return self._data.shape[0]
 
 
 class SliderLabelWidget(QWidget):
@@ -59,7 +57,21 @@ class SliderLabelWidget(QWidget):
         hbox.addWidget(self.label)
 
         self.setLayout(hbox)
-   
+ 
+
+class WidgetWithLabel(QWidget):
+    def __init__(self, parent, widget_inst, label_text):
+        super(WidgetWithLabel, self).__init__(parent)
+        hbox = QHBoxLayout()
+
+        self.wgt = widget_inst
+        self.label = QLabel(label_text, self)
+
+        hbox.addWidget(self.label)
+        hbox.addWidget(self.wgt)
+        hbox.setAlignment(Qt.AlignLeft)
+        
+        self.setLayout(hbox)
 
 
 class MainWidget(QWidget):
@@ -110,11 +122,13 @@ class MainWidget(QWidget):
         self.params_label.setMaximumHeight(40)
 
         # tab2
-        self.combo = QComboBox(self)
-        self.table = TableView()
-        self.slider = SliderLabelWidget(self)
-        self.combo.activated.connect(self.parent().on_combo_activated)
-        self.slider.sld.valueChanged.connect(self.parent().on_slider_changed)
+        self.combo = WidgetWithLabel(self, QComboBox(self), 'Result: ')
+
+
+        self.table = QTableView()
+        self.slider = WidgetWithLabel(self, SliderLabelWidget(self), 'Step: ')
+        self.combo.wgt.activated.connect(self.parent().on_combo_activated)
+        self.slider.wgt.sld.valueChanged.connect(self.parent().on_slider_changed)
 
         self.tab2.layout.addWidget(self.combo)
         self.tab2.layout.addWidget(self.slider)
@@ -211,16 +225,18 @@ class NBodyViewer(QMainWindow):
         self._set_data_from_file(fname[0])
 
     def on_combo_activated(self):
-        res_name = str(self.main_widget.combo.currentText())
+        res_name = str(self.main_widget.combo.wgt.currentText())
         res_data = self._reader.get_result(res_name, 0)
-        self.main_widget.table.set_data(res_data, self._RES_HEADER_MAP[res_name])
-        self.main_widget.slider.sld.setRange(0, self._reader.get_result_num_steps(res_name) - 1)
+        #self.main_widget.table.set_data(res_data, self._RES_HEADER_MAP[res_name])
+        self.main_widget.table.setModel(TableModel(res_data))
+        self.main_widget.slider.wgt.sld.setRange(0, self._reader.get_result_num_steps(res_name) - 1)
 
     def on_slider_changed(self, value):
-        self.main_widget.slider.label.setText(str(value))
-        res_name = str(self.main_widget.combo.currentText())
+        self.main_widget.slider.wgt.label.setText(str(value))
+        res_name = str(self.main_widget.combo.wgt.currentText())
         res_data = self._reader.get_result(res_name, value)
-        self.main_widget.table.set_data(res_data)
+        #self.main_widget.table.set_data(res_data)
+        self.main_widget.table.setModel(TableModel(res_data))
 
     def _set_data_from_file(self, filename):
         self._filename = filename
@@ -237,11 +253,12 @@ class NBodyViewer(QMainWindow):
         self._num_steps = self._reader.get_info()['number_of_steps'][()]
         self.main_widget.info_label.setText(info_str)
         for res_name in self._reader.get_result_names():
-            self.main_widget.combo.addItem(res_name)
-        res_name = str(self.main_widget.combo.currentText())
+            self.main_widget.combo.wgt.addItem(res_name)
+        res_name = str(self.main_widget.combo.wgt.currentText())
         res_data = self._reader.get_result(res_name, 0)
-        self.main_widget.table.set_data(res_data, self._RES_HEADER_MAP[res_name])
-        self.main_widget.slider.sld.setRange(0, self._reader.get_result_num_steps(res_name) - 1)
+        self.main_widget.table.setModel(TableModel(res_data))
+        #self.main_widget.table.set_data(res_data, self._RES_HEADER_MAP[res_name])
+        self.main_widget.slider.wgt.sld.setRange(0, self._reader.get_result_num_steps(res_name) - 1)
 
     def closeEvent(self, event):
         self._timer.stop()
