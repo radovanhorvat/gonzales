@@ -221,6 +221,9 @@ class NBodyViewer(QMainWindow):
         if not fname:
             return
         self._cnt = 0
+        if self._reader:
+            self._reader.close()
+        self._sizes = 4
         self._set_data_from_file(fname[0])
 
     def on_combo_activated(self):
@@ -250,6 +253,7 @@ class NBodyViewer(QMainWindow):
         )
         self._num_steps = self._reader.get_info()['number_of_steps'][()]
         self.main_widget.info_label.setText(info_str)
+        self.main_widget.combo.wgt.clear()
         for res_name in self._reader.get_result_names():
             self.main_widget.combo.wgt.addItem(res_name)
         res_name = str(self.main_widget.combo.wgt.currentText())
