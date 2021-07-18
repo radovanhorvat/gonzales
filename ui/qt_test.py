@@ -20,18 +20,26 @@ from vispy.scene import visuals
  
 class TableView(QTableWidget):        
     def set_data(self, res_data, res_headers=None):        
-        n, m = res_data.shape
+        def _item_getter(res_data, i, j):
+            if len(res_data.shape) > 1:
+                return str(res_data[i][j])
+            return str(res_data[j])
+
+        def _get_table_shape(res_data):
+            if len(res_data.shape) > 1:
+                return res_data.shape
+            return 1, res_data.shape[0]
+
+        n, m = _get_table_shape(res_data)
         self.setRowCount(n)
         self.setColumnCount(m)
         for i in range(n):            
             for j in range(m):
-                newitem = QTableWidgetItem(str(res_data[i][j]))
+                newitem = QTableWidgetItem(_item_getter(res_data, i, j))
                 #newitem.setFlags(QtCore.Qt.ItemIsEnabled)
                 self.setItem(i, j, newitem)
         if res_headers:
             self.setHorizontalHeaderLabels(res_headers)
-        self.resizeColumnsToContents()
-        self.resizeRowsToContents()
 
 
 class SliderLabelWidget(QWidget):
@@ -114,11 +122,12 @@ class MainWidget(QWidget):
         self.tab2.setLayout(self.tab2.layout)
 
         self.layout.addWidget(self.tabs)
-        self.setLayout(self.layout)    
+        self.setLayout(self.layout)
 
 
 class NBodyViewer(QMainWindow):
-    _RES_HEADER_MAP = {'position': ['r_x', 'r_y', 'r_z'], 'velocity': ['v_x', 'v_y', 'v_z'], 'energy': ['E']}
+    _RES_HEADER_MAP = {'position': ['r_x', 'r_y', 'r_z'], 'velocity': ['v_x', 'v_y', 'v_z'], 'energy': ['E'],
+                        'angular_momentum': ['L_x', 'L_y', 'L_z']}
 
     def __init__(self, filename=''):
         super().__init__()
