@@ -28,7 +28,7 @@ if __name__ == '__main__':
     # p = Points3DPlot(space)
     # p.show()
 
-    n = 100000
+    n = 10000
     cube_length = np.sqrt(n)
     G = 1.0
     eps = 1.0e-3
@@ -45,8 +45,8 @@ if __name__ == '__main__':
     #s1 = PPSimulation(space, ofp, G, eps)
     s1 = BHSimulation(space, ofp, G, eps, 100000., np.array((0., 0., 0.)), theta)
     #s1.add_result('velocity', (n, 3), res_frequency=50)
-    #s1.add_result('energy', (1,))
-    #s1.add_result('angular_momentum', (3,))
+    s1.add_result('energy', 10)
+    s1.add_result('angular_momentum', 10)
     s1.run(n_steps, step_size)
 
     #r = ResultReader(s1.output_filepath)

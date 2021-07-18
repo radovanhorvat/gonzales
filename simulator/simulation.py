@@ -70,6 +70,13 @@ class ResultReader:
 # Simulation classes
 # ------------------------------------------------------
 
+class ResultDesc:
+    def __init__(self, shape, writer_func, frequency):
+        self.shape = shape
+        self.writer_func = writer_func
+        self.frequency = frequency
+
+
 class SimulationBase:
     def __init__(self, space, output_filepath, G, eps):
         """
@@ -85,25 +92,24 @@ class SimulationBase:
         self.eps = eps
         self._pb = ProgressBar(1, 40)
         self._kernel = None
-        self._results = {'position': (1, self.space.r.shape), 'velocity': (1, self.space.v.shape)}
-        self._result_writer_map = {'position': self._write_position,
-                                   'velocity': self._write_velocity,
-                                   'energy': self._write_total_energy,
-                                   'angular_momentum': self._write_angular_momentum}
+        self._result_descs = {'position': ResultDesc(self.space.r.shape, self._write_position, 1),
+                              'velocity': ResultDesc(self.space.v.shape, self._write_velocity, 1),
+                              'energy': ResultDesc((1,), self._write_total_energy, 0),
+                              'angular_momentum': ResultDesc((3,), self._write_angular_momentum, 0)}
 
-    def add_result(self, res_name, res_shape, res_frequency=1):
+    def add_result(self, res_name, res_frequency=1):
         """
         Adds a result which shall be written to the hdf5 file during the simulation. The shape
         of the result needs to be provided, as does the frequency of the output. The default res_frequency
         1 means the result will be written to the file at each simulation step.
 
         :param res_name: string, name of result
-        :param res_shape: tuple, shape of result
-        :param res_frequency: int, result will be written every res_frequency steps
+        :param res_frequency: int, result will be written every res_frequency steps. If 0, result will not
+            be written at all.
         :return:
         """
-        assert res_name in self._result_writer_map, 'Invalid result'
-        self._results[res_name] = (res_frequency, res_shape)
+        assert res_name in self._result_descs, 'Invalid result'
+        self._result_descs[res_name].frequency = res_frequency
 
     def _write_position(self, hdf5_fobj, step_num):
         hdf5_fobj['results/position'][step_num, :] = self.space.r
@@ -120,10 +126,12 @@ class SimulationBase:
             self.space.r, self.space.v, self.space.m)
 
     def _write_results(self, hdf5_fobj, step_num):
-        for res_name, res_data in self._results.items():
-            res_freq, res_shape = res_data
+        for res_name, res_data in self._result_descs.items():
+            res_freq, res_shape = res_data.frequency, res_data.shape
+            if res_freq == 0:
+                continue
             if step_num % res_freq == 0:
-                self._result_writer_map[res_name](hdf5_fobj, int(step_num / res_freq))
+                res_data.writer_func(hdf5_fobj, int(step_num / res_freq))
 
     @staticmethod
     def set_metadata(hdf5_obj, **kwargs):
@@ -141,8 +149,10 @@ class SimulationBase:
         self.set_metadata(info_grp, number_of_steps=n_steps, time_step_size=step_size, G=self.G, epsilon=self.eps,
                           start_time=time.time(), number_of_particles=len(self.space), simulation_type=self.type)
         results_grp = hdf5_fobj.create_group('results')
-        for res_name, res_desc in self._results.items():
-            res_freq, res_shape = res_desc
+        for res_name, res_data in self._result_descs.items():
+            res_freq, res_shape = res_data.frequency, res_data.shape
+            if res_freq == 0:
+                continue
             n_rows = int(n_steps / res_freq)
             results_grp.create_dataset(res_name, (n_rows + 1, *res_shape))
 
