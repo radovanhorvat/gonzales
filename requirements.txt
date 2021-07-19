@@ -9,6 +9,7 @@ numpy==1.21.0
 opencv-python==4.1.2.30
 packaging==20.9
 pluggy==0.13.1
+psutil==5.8.0
 py==1.10.0
 PyOpenGL==3.1.5
 PyOpenGL-accelerate==3.1.5
