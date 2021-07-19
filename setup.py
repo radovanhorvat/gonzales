@@ -12,9 +12,9 @@ from setuptools import setup, Extension
 
 def get_compile_args():
     if sys.platform == 'linux':
-        return ['-fopenmp']
+        return ['-fopenmp', '-O3', '-ffast-math', '-march=native']
     elif sys.platform == 'win32':
-        return ['/openmp']
+        return ['/openmp', '/fp:fast']
     return []
 
 
@@ -48,7 +48,7 @@ extensions = [Extension("brute_force", sources=[os.path.join('kernels', 'brute_f
                                              os.path.join('kernels', 'c_src', 'octnode.c'),
                                              os.path.join('kernels', 'c_src', 'brute_force.c')],
                         include_dirs=['kernels', os.path.join('kernels', 'c_src'), np.get_include()],
-                        extra_compile_args=compile_args + ['-O3', '-ffast-math', '-march=native'],
+                        extra_compile_args=compile_args,
                         extra_link_args=link_args,
                         language="c"),
 
