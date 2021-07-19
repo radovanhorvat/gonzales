@@ -4,6 +4,7 @@ log.txt
 *.pyc
 *.so
 *.hdf5
+*.json
 
 venv/
 output/
