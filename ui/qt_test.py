@@ -92,6 +92,8 @@ class MainWidget(QWidget):
         canvas = vispy.scene.SceneCanvas(keys='interactive', show=True)
         view = canvas.central_widget.add_view()
         view.camera = 'turntable'
+        #view.camera.scale_factor = 1e11
+        axis = vispy.scene.visuals.XYZAxis(parent=view.scene)
         self.scatter = visuals.Markers()
         view.add(self.scatter)
         self.view_widget = canvas.native
@@ -140,16 +142,15 @@ class MainWidget(QWidget):
 
 
 class NBodyViewer(QMainWindow):
-    def __init__(self, filename='', body_sizes=4):
+    def __init__(self, filename='', body_sizes=4, colors=(.9, .9, .1, .7)):
         super().__init__()
         self._filename = None
         self._reader = None
         self._timer = QtCore.QTimer()
         self._cnt = 0
         self._num_steps = 0
-        self._color = (.9, .9, .1, .7)        
+        self._color = colors        
         self._sizes = body_sizes
-        self._scale = 1.0e-11
 
         self.init_ui()
         if filename:
@@ -194,7 +195,7 @@ class NBodyViewer(QMainWindow):
         if self._cnt > self._num_steps:
             return
         pos_data = self._reader.get_result('position', self._cnt)
-        self.main_widget.scatter.set_data(pos_data * self._scale, edge_color=None, face_color=self._color, size=self._sizes)
+        self.main_widget.scatter.set_data(pos_data, edge_color=None, face_color=self._color, size=self._sizes)
         self.main_widget.params_label.setText('Step: {}'.format(self._cnt))
 
     def on_play(self):
@@ -244,7 +245,7 @@ class NBodyViewer(QMainWindow):
         self._filename = filename
         self._reader = ResultReader(filename)
         pos_data = self._reader.get_result('position', self._cnt)
-        self.main_widget.scatter.set_data(pos_data * self._scale, edge_color=None, face_color=self._color, size=self._sizes)
+        self.main_widget.scatter.set_data(pos_data, edge_color=None, face_color=self._color, size=self._sizes)
         self._refresh_status_bar()
         info_str = 'N: {}, G: {}, eps: {}, type: {}'.format(
             str(self._reader.get_info()['number_of_particles'][()]),
@@ -269,9 +270,9 @@ class NBodyViewer(QMainWindow):
         super(QMainWindow, self).closeEvent(event)
 
 
-def run_viewer(filename='', body_sizes=4):
+def run_viewer(filename='', body_sizes=4, colors=(.9, .9, .1, .7)):
     app = QApplication(sys.argv)
-    nbv = NBodyViewer(filename, body_sizes)
+    nbv = NBodyViewer(filename, body_sizes, colors)
     sys.exit(app.exec_())
 
 
