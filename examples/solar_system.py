@@ -30,7 +30,7 @@ if __name__ == '__main__':
     # no close encounters, so softening is zero
     eps = 0.
     # simulated time is 10 years
-    n_steps = 365 * 10 
+    n_steps = 365 * 10
     # step size is one day
     step_size = 1
 

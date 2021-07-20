@@ -86,8 +86,9 @@ class SimulationBase:
         :param G: gravitational constant
         :param eps: gravitational softening
         """
-        self.space = space
+        self.space = space        
         self.output_filepath = output_filepath
+        self._ensure_output_dir()
         self.G = G
         self.eps = eps
         self._pb = ProgressBar(1, 40)
@@ -96,6 +97,14 @@ class SimulationBase:
                               'velocity': ResultDesc(self.space.v.shape, self._write_velocity, 1),
                               'energy': ResultDesc((1,), self._write_total_energy, 0),
                               'angular_momentum': ResultDesc((3,), self._write_angular_momentum, 0)}
+
+    def _ensure_output_dir(self):
+        output_dir = os.path.split(self.output_filepath)[0]
+        if not os.path.isdir(output_dir):
+            try:
+                os.mkdir(output_dir)
+            except:
+                raise OSError('Error creating directory: {}'.format(output_dir)) 
 
     def add_result(self, res_name, res_frequency=1):
         """
