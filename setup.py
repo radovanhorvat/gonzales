@@ -4,11 +4,6 @@ import numpy as np
 from Cython.Build import cythonize
 from setuptools import setup, Extension
 
-# python3 -m venv env
-# source env/bin/activate (deactivate with: deactivate)
-# pip install -r requirements.txt
-# pip install -e .
-# python setup.py build_ext --build-lib=kernels --> this should be added to setup
 
 def get_compile_args():
     if sys.platform == 'linux':
