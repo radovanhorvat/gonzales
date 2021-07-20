@@ -9,8 +9,8 @@ from ui.qt_test import run_viewer
 
 if __name__ == '__main__':
 
-    # data taken from: https://ssd.jpl.nasa.gov/horizons.cgi, date 20-07-2021
-    # units used: mass - solar mass; distance - AU; time - day
+    # Data taken from: https://ssd.jpl.nasa.gov/horizons.cgi, date 20-07-2021
+    # Units used: Solar mass / AU / day
     
     G_old = 6.67408e-11
     M_solar = 1.989e30
@@ -27,11 +27,11 @@ if __name__ == '__main__':
     # Gravitational constant must be converted
     G = G_old * (1. / AU)**3 / ((1. / M_solar) * (1. / 86400)**2)
 
-    # no close encounters, so softening is zero
+    # No close encounters, so softening parameter is zero
     eps = 0.
-    # simulated time is 10 years
+    # Simulated time is 10 years
     n_steps = 365 * 10
-    # step size is one day
+    # Step size is one day
     step_size = 1
 
     space = Space()
@@ -65,11 +65,16 @@ if __name__ == '__main__':
 
     output_file = os.path.abspath(os.path.join(os.path.dirname(__file__), 'output', 'earth_sun.hdf5'))
     
+    # Use a Brute-force simulation here, since we only have a few bodies
     sim = PPSimulation(space, output_file, G, eps)
+    # Add energy and angular momentum as additional results which will be written
     sim.add_result('energy')
     sim.add_result('angular_momentum')
     
+    # Run the simulation
     sim.run(n_steps, step_size)
 
+    # Run the GUI to view animation and results. Body sizes and body colors are defined for each particle
+    # in definition order. 
     run_viewer(output_file, body_sizes=[30, 15, 15, 15, 15, 25, 20, 20, 20],
                             colors=['yellow', 'brown', 'green', 'blue', 'red', 'brown', 'brown', 'blue', 'blue'])
