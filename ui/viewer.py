@@ -248,10 +248,10 @@ class NBodyViewer(QMainWindow):
         self.main_widget.scatter.set_data(pos_data, edge_color=None, face_color=self._color, size=self._sizes)
         self._refresh_status_bar()
         info_str = 'N: {}, G: {}, eps: {}, type: {}'.format(
-            str(self._reader.get_info()['number_of_particles'][()]),
-            str(self._reader.get_info()['G'][()]),
-            str(self._reader.get_info()['epsilon'][()]),
-            str(self._reader.get_info()['simulation_type'][()])
+            self._reader.get_info()['number_of_particles'][()],
+            self._reader.get_info()['G'][()],
+            self._reader.get_info()['epsilon'][()],
+            self._reader.get_info()['simulation_type'][()]
         )
         self._num_steps = self._reader.get_info()['number_of_steps'][()]
         self.main_widget.info_label.setText(info_str)

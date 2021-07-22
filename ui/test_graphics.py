@@ -6,7 +6,7 @@ import numpy as np
 from simulator.space import Space
 from simulator.simulation import PPSimulation, BHSimulation, ResultReader
 
-from ui.qt_test import run_viewer
+from ui.viewer import run_viewer
 
 
 if __name__ == '__main__':
@@ -49,12 +49,9 @@ if __name__ == '__main__':
     #s1.add_result('angular_momentum', 10)
     s1.run(n_steps, step_size)
 
-    #r = ResultReader(s1.output_filepath)
-    #print(r.get_dataset_names())
-    # x = r.get_result('velocity', 10)
+    # r = ResultReader(s1.output_filepath)
+    # x = r.get_info()
     # print(x)
-    #r.close()
+    # r.close()
 
-    #anim = Points3DAnimation(ofp)
-    #anim.animate()
     run_viewer(ofp)
