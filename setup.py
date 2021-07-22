@@ -9,7 +9,7 @@ def get_compile_args():
     if sys.platform == 'linux':
         return ['-fopenmp', '-O3', '-ffast-math', '-march=native']
     elif sys.platform == 'win32':
-        return ['/openmp', '/fp:fast']
+        return ['/openmp']
     return []
 
 
