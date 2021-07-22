@@ -4,7 +4,7 @@ import numpy as np
 from simulator.space import Space
 from simulator.simulation import PPSimulation
 
-from ui.qt_test import run_viewer
+from ui.viewer import run_viewer
 
 
 if __name__ == '__main__':

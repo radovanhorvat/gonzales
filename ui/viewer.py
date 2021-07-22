@@ -3,7 +3,7 @@ import numpy as np
 
 from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QWidget, QPushButton, QLabel, QGroupBox,
                              QAction, QFileDialog, QApplication, QVBoxLayout, QSlider, QTabWidget,
-                             QTableWidgetItem, QComboBox, QHBoxLayout, QTableView)
+                             QTableWidgetItem, QComboBox, QHBoxLayout, QTableView, QTableWidget)
 from PyQt5.QtGui import QIcon
 from pyqtgraph.Qt import QtGui, QtCore
 from PyQt5.QtCore import Qt
@@ -82,12 +82,15 @@ class MainWidget(QWidget):
         self.tabs = QTabWidget()
         self.tab1 = QWidget()
         self.tab2 = QWidget()
+        self.tab3 = QWidget()
 
         self.tabs.addTab(self.tab1, "Animation")
         self.tabs.addTab(self.tab2, "Results")
+        self.tabs.addTab(self.tab3, "Info")
 
         self.tab1.layout = QVBoxLayout(self)
         self.tab2.layout = QVBoxLayout(self)
+        self.tab3.layout = QVBoxLayout(self)
 
         canvas = vispy.scene.SceneCanvas(keys='interactive', show=True)
         view = canvas.central_widget.add_view()
@@ -136,6 +139,13 @@ class MainWidget(QWidget):
         self.tab2.layout.addWidget(self.slider)
         self.tab2.layout.addWidget(self.table)
         self.tab2.setLayout(self.tab2.layout)
+
+        #tab3
+        self.info_table = QTableWidget()
+        self.info_table.verticalHeader().setVisible(False)
+        self.info_table.horizontalHeader().setVisible(False)
+        self.tab3.layout.addWidget(self.info_table)
+        self.tab3.setLayout(self.tab3.layout)
 
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
@@ -198,6 +208,16 @@ class NBodyViewer(QMainWindow):
         self.main_widget.scatter.set_data(pos_data, edge_color=None, face_color=self._color, size=self._sizes)
         self.main_widget.params_label.setText('Step: {}'.format(self._cnt))
 
+    def _populate_info_table(self):
+        n = len(self._reader.get_info().keys())
+        self.main_widget.info_table.setRowCount(n)
+        self.main_widget.info_table.setColumnCount(2)
+        for i, kname in enumerate(self._reader.get_info().keys()):
+            val = self._reader.get_info()[kname][()]
+            self.main_widget.info_table.setItem(i, 0, QTableWidgetItem(str(kname)))
+            self.main_widget.info_table.setItem(i, 1, QTableWidgetItem(str(val)))
+        #self._reader.get_info()['number_of_particles'][()]
+
     def on_play(self):
         if not self._filename:
             self.statusBar().showMessage('No file loaded')
@@ -220,7 +240,7 @@ class NBodyViewer(QMainWindow):
     def on_file_open(self):
         home_dir = str(Path.home())
         fname = QFileDialog.getOpenFileName(self, 'Open file', home_dir)
-        if not fname:
+        if not any(fname):
             return
         self._cnt = 0
         if self._reader:
@@ -255,6 +275,7 @@ class NBodyViewer(QMainWindow):
         )
         self._num_steps = self._reader.get_info()['number_of_steps'][()]
         self.main_widget.info_label.setText(info_str)
+        self._populate_info_table()
         self.main_widget.combo.wgt.clear()
         for res_name in self._reader.get_result_names():
             self.main_widget.combo.wgt.addItem(res_name)
