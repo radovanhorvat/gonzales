@@ -128,6 +128,31 @@ class Space:
         self.m = np.append(
             self.m, np.apply_along_axis(m_func, 1, r_cylindrical))
 
+    def add_plummer(self, n, center):
+        m = np.ones(n) * 1. / n
+        self.m = np.append(self.m, m)
+        r = 1. / np.sqrt(np.random.rand(n)**(-2. / 3.) - 1)
+        phi = np.random.uniform(0, 2 * np.pi, n)
+        theta = np.arccos(np.random.uniform(-1, 1, n))
+        R = np.ones((n, 3))
+        R[:, 0] = np.multiply(np.multiply(r, np.sin(theta)), np.cos(phi))
+        R[:, 1] = np.multiply(np.multiply(r, np.sin(theta)), np.sin(phi))
+        R[:, 2] = np.multiply(r, np.cos(theta))
+        self.r = np.vstack((self.r, R + center))
+        x = np.zeros(n)
+        y = np.ones(n) * 0.1
+        while all(y > x**2 * (1. - x**2)**3.5):
+            x = np.random.uniform(0, 1, n)
+            y = np.random.uniform(0, 0.1, n)
+        phi = np.random.uniform(0, 2 * np.pi, n)
+        theta = np.arccos(np.random.uniform(-1, 1, n))
+        vel = np.multiply(x, np.sqrt(2) * (1 + np.multiply(r, r)) ** -0.25)
+        V = np.ones((n, 3))
+        V[:, 0] = np.multiply(np.multiply(vel, np.sin(theta)), np.cos(phi))
+        V[:, 1] = np.multiply(np.multiply(vel, np.sin(theta)), np.sin(phi))
+        V[:, 2] = np.multiply(vel, np.cos(theta))
+        self.v = np.vstack((self.v, V))
+
     def clear_particles(self):
         """
         Removes all particles from the space.
