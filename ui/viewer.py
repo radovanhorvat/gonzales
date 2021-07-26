@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import h5py
 import numpy as np
 
@@ -223,7 +225,10 @@ class NBodyViewer(QMainWindow):
         for i, kname in enumerate(self._reader.get_info().keys()):
             val = self._reader.get_info()[kname][()]
             self.main_widget.info_table.setItem(i, 0, QTableWidgetItem(str(kname)))
+            if kname in ['start_time', 'end_time']:
+                val = datetime.fromtimestamp(val).strftime("%m/%d/%Y, %H:%M:%S")
             self.main_widget.info_table.setItem(i, 1, QTableWidgetItem(str(val)))
+        self.main_widget.info_table.resizeColumnsToContents()
 
     def on_play(self):
         if not self._filename:
