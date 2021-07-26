@@ -46,6 +46,15 @@ class ResultReader:
         """
         return self._fobj['results'][result_name][step_num]
 
+    def get_result_frequency(self, result_name):
+        """
+
+        :param result_name: str, name of result, must be supported by simulation
+        
+        Returns result frequency
+        """        
+        return self._fobj['results'][result_name].attrs['frequency']
+
     def get_result_num_steps(self, result_name):
         """
 
@@ -164,6 +173,7 @@ class SimulationBase:
                 continue
             n_rows = int(n_steps / res_freq)
             results_grp.create_dataset(res_name, (n_rows + 1, *res_shape))
+            results_grp[res_name].attrs['frequency'] = res_freq
 
     def set_kernel(self, kernel_func):
         """

@@ -263,9 +263,11 @@ class NBodyViewer(QMainWindow):
         self.main_widget.slider.wgt.sld.setValue(0)
 
     def on_slider_changed(self, value):
-        self.main_widget.slider.wgt.label.setText(str(value))
         res_name = str(self.main_widget.combo.wgt.currentText())
         res_data = self._reader.get_result(res_name, value)
+        res_freq = self._reader.get_result_frequency(res_name)
+        self.main_widget.slider.wgt.label.setText(str(res_freq * value))
+        self.main_widget.slider.wgt.sld.setValue(value)
         self.main_widget.table.setModel(TableModel(res_data, res_name))
 
     def _set_data_from_file(self, filename):

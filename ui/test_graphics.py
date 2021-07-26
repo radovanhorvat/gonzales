@@ -46,8 +46,8 @@ if __name__ == '__main__':
     #s1 = PPSimulation(space, ofp, G, eps)
     s1 = BHSimulation(space, ofp, G, eps, 100000., np.array((0., 0., 0.)), theta)
     #s1.add_result('velocity', (n, 3), res_frequency=50)
-    #s1.add_result('energy', 10)
-    #s1.add_result('angular_momentum', 10)
+    s1.add_result('energy', 10)
+    s1.add_result('angular_momentum', 50)
     
     s1.run(n_steps, step_size)
 
