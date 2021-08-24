@@ -4,8 +4,9 @@ A 3D N-body simulator.
 
 ## Project description
 
-This project is a N-body simulator, which includes a user interface for overview and animation of simulation results.
-The low level code is written in Cython and C, and the rest was developed with Python. The GUI is written using PyQt5.
+This project is a parallel N-body simulator, which includes a user interface for overview and animation of simulation results.
+The low level code is written in Cython and C, and the rest was developed with Python. Parallelization was achieved with OpenMP.
+The GUI is written using PyQt5.
 
 Two main simulation types are available:
 
