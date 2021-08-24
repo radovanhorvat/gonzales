@@ -5,9 +5,6 @@ from libc.math cimport sqrt
 from cython.parallel import prange
 cimport openmp
 
-from simulator.utils import timing
-import kernels.brute_force as kernbf
-
 
 ctypedef np.float64_t DTYPE_t
 
@@ -18,7 +15,7 @@ ctypedef np.float64_t DTYPE_t
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef calc_com(DTYPE_t [:, :] r, DTYPE_t [:] m):
+cdef _calc_com(DTYPE_t [:, :] r, DTYPE_t [:] m):
     """
         Calculate center of mass.
     """
@@ -40,7 +37,7 @@ cdef calc_com(DTYPE_t [:, :] r, DTYPE_t [:] m):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef calc_ke(DTYPE_t [:, :] v, DTYPE_t [:] m):
+cdef _calc_ke(DTYPE_t [:, :] v, DTYPE_t [:] m):
     """
         Calculate kinetic energy.
     """
@@ -55,7 +52,7 @@ cdef calc_ke(DTYPE_t [:, :] v, DTYPE_t [:] m):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef calc_pe(DTYPE_t [:, :] r, DTYPE_t [:] m, double G, double eps):
+cdef _calc_pe(DTYPE_t [:, :] r, DTYPE_t [:] m, double G, double eps):
     """
         Calculate potential energy.
     """
@@ -77,18 +74,18 @@ cdef calc_pe(DTYPE_t [:, :] r, DTYPE_t [:] m, double G, double eps):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef calc_te(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m, double G, double eps):
+cdef _calc_te(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m, double G, double eps):
     """
         Calculates total energy.
     """
     cdef double te
-    te = calc_pe(r, m, G, eps) + calc_ke(v, m)
+    te = _calc_pe(r, m, G, eps) + _calc_ke(v, m)
     return te
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef calc_ang_momentum(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m):
+cdef _calc_ang_momentum(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m):
     """
         Calculates angular momentum.
     """
@@ -105,7 +102,7 @@ cdef calc_ang_momentum(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:] m):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef advance_r(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:, :] accs, double dt):
+cdef _advance_r(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:, :] accs, double dt):
     """
         Updates positions for time step dt.
     """
@@ -120,7 +117,7 @@ cdef advance_r(DTYPE_t [:, :] r, DTYPE_t [:, :] v, DTYPE_t [:, :] accs, double d
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef advance_v(DTYPE_t [:, :] v, DTYPE_t [:, :] accs, DTYPE_t [:, :] new_accs, double dt):
+cdef _advance_v(DTYPE_t [:, :] v, DTYPE_t [:, :] accs, DTYPE_t [:, :] new_accs, double dt):
     """
         Updates velocities for time step dt.
     """
@@ -137,34 +134,29 @@ cdef advance_v(DTYPE_t [:, :] v, DTYPE_t [:, :] accs, DTYPE_t [:, :] new_accs, d
 # Wrappers
 # ---------------------------------------------------
 
-@timing
-def calc_com_wrap(r, m):
-    return calc_com(r, m)
+def calc_com(r, m):
+    return _calc_com(r, m)
 
 
-@timing
-def calc_ke_wrap(v, m):
-    return calc_ke(v, m)
+def calc_ke(v, m):
+    return _calc_ke(v, m)
 
 
-@timing
-def calc_pe_wrap(r, m, G, eps):
-    return calc_pe(r, m, G, eps)
+def calc_pe(r, m, G, eps):
+    return _calc_pe(r, m, G, eps)
 
 
-#@timing
-def calc_te_wrap(r, v, m, G, eps):
-    return calc_te(r, v, m, G, eps)
+def calc_te(r, v, m, G, eps):
+    return _calc_te(r, v, m, G, eps)
 
 
-#@timing
-def calc_ang_mom_wrap(r, v, m):
-    return calc_ang_momentum(r, v, m)
+def calc_ang_mom(r, v, m):
+    return _calc_ang_momentum(r, v, m)
 
 
-def advance_r_wrap(r, v, accs, dt):
-    advance_r(r, v, accs, dt)
+def advance_r(r, v, accs, dt):
+    _advance_r(r, v, accs, dt)
 
 
-def advance_v_wrap(v, accs, new_accs, dt):
-    advance_v(v, accs, new_accs, dt)
+def advance_v(v, accs, new_accs, dt):
+    _advance_v(v, accs, new_accs, dt)

@@ -25,19 +25,10 @@ compile_args = get_compile_args()
 link_args = get_link_args()
 
 
-extensions = [Extension("brute_force", sources=[os.path.join('kernels', 'brute_force.pyx'),
-                                                os.path.join('kernels', 'cpp_src', 'brute_force.cpp')],
+extensions = [Extension("brute_force", sources=[os.path.join('kernels', 'brute_force.pyx')],
                         extra_compile_args=compile_args,
                         extra_link_args=link_args,
-                        include_dirs=['kernels', os.path.join('kernels', 'cpp_src'), np.get_include()],
-                        language="c++"),
-              Extension("octree", sources=[os.path.join('kernels', 'octree.pyx'),
-                                           os.path.join('kernels', 'cpp_src', 'octnode.cpp'),
-                                           os.path.join('kernels', 'cpp_src', 'octree.cpp')],
-                        include_dirs=['kernels', os.path.join('kernels', 'cpp_src'), np.get_include()],
-                        extra_compile_args=compile_args,
-                        extra_link_args=link_args,
-                        language="c++"),
+                        include_dirs=['kernels', np.get_include()]),
               Extension("octree_c", sources=[os.path.join('kernels', 'octree_c.pyx'),
                                              os.path.join('kernels', 'c_src', 'data_structs.c'),
                                              os.path.join('kernels', 'c_src', 'octnode.c'),

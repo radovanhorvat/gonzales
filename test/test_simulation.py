@@ -73,7 +73,7 @@ def mass_func(pos_vec):
 
 
 def test_sim_barnes_hut_theta_zero():
-    # test Barnes-Hut C++ simulation relative to Cython brute force simulation, for theta = 0
+    # test Barnes-Hut simulation relative to Cython brute force simulation, for theta = 0
     with make_temp_result_dir('temp_results') as res_dir:
         pp_file = os.path.join(res_dir, 'test_pp.hdf5')
         bh_file = os.path.join(res_dir, 'test_bh.hdf5')
@@ -96,7 +96,7 @@ def test_sim_barnes_hut_theta_zero():
 
 
 def test_sim_barnes_hut_theta_non_zero():
-    # test Barnes-Hut C++ simulation relative to Cython brute force simulation, for theta = 0.5
+    # test Barnes-Hut simulation relative to Cython brute force simulation, for theta = 0.5
     with make_temp_result_dir('temp_results') as res_dir:
         pp_file = os.path.join(res_dir, 'test_pp.hdf5')
         bh_file = os.path.join(res_dir, 'test_bh.hdf5')

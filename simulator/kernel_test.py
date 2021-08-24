@@ -4,7 +4,6 @@ import timeit
 
 from simulator.space import Space
 import kernels.brute_force as kernbf
-import kernels.octree as kernoct
 import kernels.numeric as kernum
 import kernels.octree_c as kernoct_c
 
@@ -33,6 +32,6 @@ if __name__ == '__main__':
 
     #t = timeit.Timer(functools.partial(kernoct.calc_accs_octree_wrap, cube_length, 0., 0., 0., space.r, space.m, G, eps, theta))
     
-    t = timeit.Timer(functools.partial(kernoct_c.calc_accs_wrap_wrap_c, cube_length, 0., 0., 0., space.r, space.m, G, eps, theta))
+    t = timeit.Timer(functools.partial(kernoct_c.calc_accs_octree, cube_length, 0., 0., 0., space.r, space.m, G, eps, theta))
     
     print(t.timeit(1))

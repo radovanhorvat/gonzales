@@ -136,11 +136,10 @@ class SimulationBase:
         hdf5_fobj['results/velocity'][step_num, :] = self.space.v
 
     def _write_total_energy(self, hdf5_fobj, step_num):
-        hdf5_fobj['results/energy'][step_num] = kernum.calc_te_wrap(self.space.r, self.space.v, self.space.m, self.G,
-                                                                      self.eps)
+        hdf5_fobj['results/energy'][step_num] = kernum.calc_te(self.space.r, self.space.v, self.space.m, self.G, self.eps)
 
     def _write_angular_momentum(self, hdf5_fobj, step_num):
-        hdf5_fobj['results/angular_momentum'][step_num] = kernum.calc_ang_mom_wrap(
+        hdf5_fobj['results/angular_momentum'][step_num] = kernum.calc_ang_mom(
             self.space.r, self.space.v, self.space.m)
 
     def _write_results(self, hdf5_fobj, step_num):
@@ -204,9 +203,9 @@ class SimulationBase:
             logging.info('Start simulation')
             # integration
             for i in range(1, n_steps + 1):
-                kernum.advance_r_wrap(self.space.r, self.space.v, accs, step_size)
+                kernum.advance_r(self.space.r, self.space.v, accs, step_size)
                 new_accs = self.calc_accs()
-                kernum.advance_v_wrap(self.space.v, accs, new_accs, step_size)
+                kernum.advance_v(self.space.v, accs, new_accs, step_size)
                 accs = new_accs
                 # update hdf5 data
                 self._write_results(res_f, i)
@@ -223,7 +222,7 @@ class PPSimulation(SimulationBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.type = 'Brute force'
-        self.set_kernel(kernbf.calculate_accs_pp_wrap)
+        self.set_kernel(kernbf.calculate_accs_pp)
 
     def __repr__(self):
         return '<{}[{}] N={}, type={}>'.format(type(self).__name__, id(self), len(self.space), self.type)
@@ -243,7 +242,7 @@ class BHSimulation(SimulationBase):
         self.root_center = root_center
         self.theta = theta
         #self.set_kernel(kernoct.calc_accs_octree_wrap)
-        self.set_kernel(kernoct_c.calc_accs_wrap_wrap_c)
+        self.set_kernel(kernoct_c.calc_accs_octree)
 
     def __repr__(self):
         return '<{}[{}] N={}, type={}>'.format(type(self).__name__, id(self), len(self.space), self.type)
