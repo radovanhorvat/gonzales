@@ -11,6 +11,5 @@ output/
 
 build/
 kernels/*.pyd
-kernels/*.c
+nbody/kernels/*.c
 kernels/*.cpp
-

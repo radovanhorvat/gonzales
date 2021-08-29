@@ -7,7 +7,7 @@
 /* ---------------------------------
 	particle functions
 ------------------------------------ */	
-
+//a
 particle* particle_make(double x, double y, double z, double m) {
 	particle* p = malloc(sizeof(particle));
 	p->x = x;
