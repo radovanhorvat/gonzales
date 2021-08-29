@@ -31,10 +31,10 @@ class Benchmark:
     @staticmethod
     def _get_system_info():
         info={}
-        info['platform']=platform.system()
-        info['platform-release']=platform.release()
-        info['platform-version']=platform.version()
-        info['processor']=platform.processor()
+        info['platform'] = platform.system()
+        info['platform-release'] = platform.release()
+        info['platform-version'] = platform.version()
+        info['processor'] = platform.processor()
         info['cores'] = psutil.cpu_count()
         info['memory'] = round(psutil.virtual_memory().total / (1024.0**3))
         return info
