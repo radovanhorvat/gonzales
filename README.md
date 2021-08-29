@@ -27,13 +27,14 @@ Two main simulation types are available:
 - in the repo root folder, create a virtual environment using `python -m venv venv`
 - activate the virtual environment with `source env/bin/activate` (Linux) or `venv\Scripts\activate.bat` (Windows)
 - install requirements using pip: `pip install -r requirements.txt`
-- build the extension modules (simulator kernels) with: `python setup.py build_ext --build-lib=kernels`
+- build the extension modules (simulator kernels) with: `python setup.py build_ext --build-lib=src/python/nbody/kernels`
 
 Now, assuming everything was successful, you can do the following in order to verify everything is working properly:
 
+- navigate to directory `src/python`
 - run tests with `python -m pytest`
-- run benchmarks with `python -m benchmark.benchmark`
-- run one of the examples, like the Solar system simulation: `python -m examples.solar_system`
+- run benchmarks with `python -m nbody.benchmark.benchmark`
+- run one of the examples, like the Solar system simulation: `python -m nbody.examples.solar_system`
 
 Have fun!
 
