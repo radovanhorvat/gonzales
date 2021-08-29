@@ -11,7 +11,7 @@ ctypedef np.float64_t DTYPE_t
 # ---------------------------------------------------
 # Cython kernel
 # ---------------------------------------------------
-#a
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef _calculate_accs_pp(DTYPE_t [:, :] r, DTYPE_t[:] m, double G, double eps):
