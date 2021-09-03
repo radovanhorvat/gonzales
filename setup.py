@@ -48,27 +48,11 @@ extensions = [Extension("nbody.kernels.brute_force", sources=[os.path.join(CYTHO
               ]
 
 
-# class build_ext_first(setuptools.command.install.install):
-#     def run(self):
-#         self.run_command('build_ext --build-lib=src/python/nbody/kernels')
-#         return setuptools.command.install.install.run(self)
-
-
-# class build_ext(_build_ext):
-#     'to install numpy'
-#     def initialize_options(self):
-#         super().initialize_options()
-#         self.build_lib = os.path.join('src', 'python', 'nbody', 'kernels')
-
-
 setup(
     name='nbodytest',
     version='0.60',
     packages=find_packages(os.path.join('src', 'python')),
     package_dir={'': os.path.join('src', 'python')},
-    #ext_package='nbody.kernels',
-    #package_data={'': [os.path.join('src', 'cython', '*.pyx')]},
-    #cmdclass={'build_ext' : build_ext},
     description='N-body simulator',
     author='Radovan Horvat',
     author_email='radovan.horvat@gmail.com',
