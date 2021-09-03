@@ -11,5 +11,6 @@ output/
 
 build/
 kernels/*.pyd
+src/cython/*.c
 nbody/kernels/*.c
 kernels/*.cpp

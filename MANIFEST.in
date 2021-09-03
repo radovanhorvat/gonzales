@@ -1,0 +1,2 @@
+include src/c/*.h
+include src/cython/*.pyx

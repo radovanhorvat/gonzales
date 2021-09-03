@@ -7,8 +7,7 @@ from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QWidget, QPushButton, QLabe
                              QAction, QFileDialog, QApplication, QVBoxLayout, QSlider, QTabWidget,
                              QTableWidgetItem, QComboBox, QHBoxLayout, QTableView, QTableWidget)
 from PyQt5.QtGui import QIcon
-from pyqtgraph.Qt import QtGui, QtCore
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QAbstractTableModel, QTimer
 
 import sys
 from pathlib import Path
@@ -20,7 +19,7 @@ import vispy.scene
 from vispy.scene import visuals
 
 
-class TableModel(QtCore.QAbstractTableModel):
+class TableModel(QAbstractTableModel):
     _header_label_map = {'position': ['r_x', 'r_y', 'r_z'],
                          'velocity': ['v_x', 'v_y', 'v_z'],
                          'angular_momentum': ['L_x', 'L_y', 'L_z'],
@@ -51,7 +50,7 @@ class TableModel(QtCore.QAbstractTableModel):
         labels = self._header_label_map.get(self._res_name)
         if labels and role == Qt.DisplayRole and orientation == Qt.Horizontal:
             return labels[section]            
-        return QtCore.QAbstractTableModel.headerData(self, section, orientation, role)
+        return QAbstractTableModel.headerData(self, section, orientation, role)
 
 
 class SliderLabelWidget(QWidget):
@@ -166,7 +165,7 @@ class NBodyViewer(QMainWindow):
         super().__init__()
         self._filename = None
         self._reader = None
-        self._timer = QtCore.QTimer()
+        self._timer = QTimer()
         self._cnt = 0
         self._num_steps = 0
         self._color = colors        
