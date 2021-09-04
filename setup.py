@@ -56,6 +56,7 @@ setup(
     description='N-body simulator',
     author='Radovan Horvat',
     author_email='radovan.horvat@gmail.com',
-    install_requires=['numpy', 'Cython', 'h5py', 'psutil', 'vispy', 'PyQt5'],
+    install_requires=['numpy>=1.21.0', 'Cython>=0.29.23', 'h5py>=3.3.0', 'psutil>=5.8.0', 'vispy>=0.7.1',
+                      'PyQt5>=5.15.4'],
     ext_modules=cythonize(extensions),
 )

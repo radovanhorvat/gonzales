@@ -2,6 +2,7 @@ log.txt
 
 .idea
 *.pyc
+*.egg-info
 *.so
 *.hdf5
 *.json
@@ -9,6 +10,7 @@ log.txt
 venv/
 output/
 
+dist/
 build/
 kernels/*.pyd
 src/cython/*.c
