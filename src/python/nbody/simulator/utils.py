@@ -124,17 +124,3 @@ class ProgressBar:
                                        progress_percentage), end='')
         if self._current_iter == self._iterations:
             print()
-
-
-if __name__ == '__main__':
-    pb = ProgressBar(10, 30)
-    for i in range(10):
-        pb.update()
-        time.sleep(.1)
-
-    pb_style = ProgressBarStyle(left='', right='', empty=' ', fill='#', text='My progress: ')
-    pb.set_style(pb_style)
-    pb.reset(50)
-    for i in range(50):
-        pb.update()
-        time.sleep(.05)

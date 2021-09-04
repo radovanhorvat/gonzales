@@ -2,13 +2,11 @@ import os
 import logging
 import time
 import h5py
-import numpy as np
 
 import nbody.kernels.brute_force as kernbf
 import nbody.kernels.octree_c as kernoct_c
 import nbody.kernels.numeric as kernum
 from nbody.simulator.utils import ProgressBar
-from nbody.simulator.space import Space
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
@@ -186,6 +184,12 @@ class SimulationBase:
         raise NotImplementedError
 
     def run(self, n_steps, step_size):
+        """
+        Runs the simulation.
+
+        :param n_steps: number of steps
+        :param step_size: step size
+        """
         # reset Progress bar
         self._pb.reset(n_steps)
         with h5py.File(self.output_filepath, 'w') as res_f:
@@ -240,7 +244,6 @@ class BHSimulation(SimulationBase):
         self.root_width = root_width
         self.root_center = root_center
         self.theta = theta
-        #self.set_kernel(kernoct.calc_accs_octree_wrap)
         self.set_kernel(kernoct_c.calc_accs_octree)
 
     def __repr__(self):
@@ -249,44 +252,3 @@ class BHSimulation(SimulationBase):
     def calc_accs(self):
         return self._kernel(self.root_width, *self.root_center, self.space.r, self.space.m, self.G, self.eps,
                             self.theta)
-
-
-if __name__ == '__main__':
-    def vel_func(pos_vec):
-        return np.array((0., 0., 0.))
-
-
-    def mass_func(pos_vec):
-        return 1.0
-
-    n = 1000
-    cube_length = np.sqrt(n)
-    G = 1.0
-    eps = 1.0e-3
-    theta = 0.75
-    n_steps = 1000
-    step_size = 0.001
-
-    space = Space()
-    space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
-
-    ofp_bh = os.path.abspath(os.path.join(os.path.dirname(__file__), 'output', 'test_bh.hdf5'))
-    #ofp_bh = os.path.normpath(r'D:\Python_Projects\results\test_bh.hdf5')
-    sim_bh = BHSimulation(space, ofp_bh, G, eps, 10 * cube_length, np.array((0., 0., 0.)), theta)
-    #sim_bh.add_result('energy', (1,), n_steps)
-    sim_bh.add_result('angular_momentum', (3,), n_steps)
-    sim_bh.run(n_steps, step_size)
-
-    r = ResultReader(sim_bh.output_filepath)
-    info = r.get_info()
-    x = r.get_result('angular_momentum', 0)
-    y = r.get_result('angular_momentum', 1)
-    print(x, y)
-    r.close()
-
-
-    # with h5py.File(sim_bh.output_filepath, 'r') as bh:
-    #     init = bh['results']['energy'][0]
-    #     fin = bh['results']['energy'][1]
-    #     print(init, fin)
-    #     print(np.abs(init - fin) / np.abs(init))
