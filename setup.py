@@ -1,11 +1,14 @@
 import os
 import sys
 import numpy as np
+from pathlib import Path
 from Cython.Build import cythonize
 from setuptools import setup, Extension, find_packages
 
 CYTHON_SRC_PATH = os.path.join('src', 'cython')
 C_SRC_PATH = os.path.join('src', 'c')
+
+long_description = (Path(__file__).parent / "README.md").read_text()
 
 
 def get_compile_args():
@@ -50,10 +53,12 @@ extensions = [Extension("nbody.kernels.brute_force", sources=[os.path.join(CYTHO
 
 setup(
     name='nbodytest',
-    version='0.60',
+    version='0.63',
     packages=find_packages(os.path.join('src', 'python')),
     package_dir={'': os.path.join('src', 'python')},
     description='N-body simulator',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     author='Radovan Horvat',
     author_email='radovan.horvat@gmail.com',
     install_requires=['numpy>=1.21.0', 'Cython>=0.29.23', 'h5py>=3.3.0', 'psutil>=5.8.0', 'vispy>=0.7.1',
