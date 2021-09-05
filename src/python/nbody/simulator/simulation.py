@@ -8,7 +8,6 @@ import nbody.kernels.octree_c as kernoct_c
 import nbody.kernels.numeric as kernum
 from nbody.simulator.utils import ProgressBar
 
-
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 
 
