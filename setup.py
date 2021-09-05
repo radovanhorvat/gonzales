@@ -4,7 +4,6 @@ import numpy as np
 from pathlib import Path
 from Cython.Build import cythonize
 from setuptools import setup, Extension, find_packages
-from src.python.nbody import __version__
 
 
 CYTHON_SRC_PATH = os.path.join('src', 'cython')
@@ -55,7 +54,7 @@ extensions = [Extension("nbody.kernels.brute_force", sources=[os.path.join(CYTHO
 
 setup(
     name='nbodytest',
-    version=__version__,
+    version='0.66',
     packages=find_packages(os.path.join('src', 'python')),
     package_dir={'': os.path.join('src', 'python')},
     description='N-body simulator',
