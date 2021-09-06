@@ -54,7 +54,7 @@ extensions = [Extension("nbody.kernels.brute_force", sources=[os.path.join(CYTHO
 
 setup(
     name='nbodytest',
-    version='0.66',
+    version='0.1.0.dev',
     packages=find_packages(os.path.join('src', 'python')),
     package_dir={'': os.path.join('src', 'python')},
     description='N-body simulator',
