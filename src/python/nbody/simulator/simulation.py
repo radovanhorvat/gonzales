@@ -36,6 +36,7 @@ class ResultReader:
 
     def get_result(self, result_name, step_num):
         """
+        Get a specific result for a given step.
 
         :param result_name: str, name of result, must be supported by simulation
         :param step_num: step number
@@ -44,6 +45,7 @@ class ResultReader:
 
     def get_result_frequency(self, result_name):
         """
+        Get result frequency.
 
         :param result_name: str, name of result, must be supported by simulation
         

@@ -35,6 +35,7 @@ class Space:
     def add_particle(self, r, v, m):
         """
         Add a single particle with the specified position, velocity and mass.
+
         :param r: numpy array, position vector of the particle
         :param v: numpy array, velocity vector of the particle
         :param m: float, particle mass
@@ -80,6 +81,7 @@ class Space:
         """
         Generates uniform random particle distribution within a spherical volume
         with a given center and radius.
+
         :param n: number of particles to generate
         :param center: center of spherical volume
         :param radius: radius of spherical volume
@@ -104,6 +106,7 @@ class Space:
         """
         Generates uniform random particle distribution within a cylindrical
         volume with a given center, radius and height.
+
         :param n: number of particles to generate
         :param center: center of cylindrical volume
         :param radius: radius of cylindrical volume
