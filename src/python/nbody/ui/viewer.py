@@ -298,6 +298,13 @@ class NBodyViewer(QMainWindow):
 
 
 def run_viewer(filename='', body_sizes=4, colors=(.9, .9, .1, .7)):
+    """
+    Runs the viewer with given filename.
+
+    :param filename: filepath of hdf5 file
+    :param body_sizes: int or tuple of ints, respective body size(s) which will be drawn.
+    :param colors: double or tuple of doubles, respective body color(s) which will be drawn.
+    """
     app = QApplication(sys.argv)
     nbv = NBodyViewer(filename, body_sizes, colors)
     sys.exit(app.exec_())
