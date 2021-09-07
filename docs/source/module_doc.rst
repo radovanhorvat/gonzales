@@ -5,4 +5,5 @@ Modules
    :maxdepth: 2
 
    space
+   simulator
    viewer

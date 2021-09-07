@@ -1,5 +1,8 @@
 nbody.simulator.space
 =====================
 
-.. automodule:: nbody.simulator.space
-   :members:
+.. currentmodule:: nbody.simulator.space
+
+* .. autoclass:: Space
+     :members:
+     :special-members: __init__

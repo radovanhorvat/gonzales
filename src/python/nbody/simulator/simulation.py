@@ -90,6 +90,7 @@ class SimulationBase:
         Base class for all simulation types.
 
         :param space: instance of Space
+        :param output_filepath: output filepath
         :param G: gravitational constant
         :param eps: gravitational softening
         """
@@ -106,12 +107,14 @@ class SimulationBase:
                               'angular_momentum': ResultDesc((3,), self._write_angular_momentum, 0)}
 
     def _ensure_output_dir(self):
-        output_dir = os.path.split(self.output_filepath)[0]
-        if not os.path.isdir(output_dir):
+        head, tail = os.path.split(self.output_filepath)
+        if not head:
+            return
+        if not os.path.isdir(head):
             try:
-                os.mkdir(output_dir)
+                os.mkdir(head)
             except:
-                raise OSError('Error creating directory: {}'.format(output_dir)) 
+                raise OSError('Error creating directory: {}'.format(head))
 
     def add_result(self, res_name, res_frequency=1):
         """
@@ -221,9 +224,15 @@ class SimulationBase:
 
 class PPSimulation(SimulationBase):
     """
-    Simulation class for brute-force.
+    Simulation class for brute-force simulations.
     """
     def __init__(self, *args, **kwargs):
+        """
+        :param space: instance of Space
+        :param output_filepath: output filepath
+        :param G: gravitational constant
+        :param eps: gravitational softening
+        """
         super().__init__(*args, **kwargs)
         self.type = 'Brute force'
         self.set_kernel(kernbf.calculate_accs_pp)
@@ -232,14 +241,26 @@ class PPSimulation(SimulationBase):
         return '<{}[{}] N={}, type={}>'.format(type(self).__name__, id(self), len(self.space), self.type)
 
     def calc_accs(self):
+        """
+        Calculates the acceleration vector, using the kernel which was set.
+        """
         return self._kernel(self.space.r, self.space.m, self.G, self.eps)
 
 
 class BHSimulation(SimulationBase):
     """
-    Simulation class for Barnes-Hut.
+    Simulation class for Barnes-Hut simulations.
     """
     def __init__(self, space, output_filepath, G, eps, root_width, root_center, theta):
+        """
+        :param space: instance of Space
+        :param output_filepath: output filepath
+        :param G: gravitational constant
+        :param eps: gravitational softening
+        :param root_width: octree root node width
+        :param root_center: octree root node center
+        :param theta: threshold parameter
+        """
         super().__init__(space, output_filepath, G, eps)
         self.type = 'Barnes-Hut'
         self.root_width = root_width
@@ -251,5 +272,8 @@ class BHSimulation(SimulationBase):
         return '<{}[{}] N={}, type={}>'.format(type(self).__name__, id(self), len(self.space), self.type)
 
     def calc_accs(self):
+        """
+        Calculates the acceleration vector, using the kernel which was set.
+        """
         return self._kernel(self.root_width, *self.root_center, self.space.r, self.space.m, self.G, self.eps,
                             self.theta)

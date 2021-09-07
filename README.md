@@ -35,7 +35,7 @@ Now, assuming everything was successful, you can do the following in order to ve
 
 ## Quick start
 
-Let us setup a minimal brute force simulation. First, we need numpy:
+Let us set up a minimal brute force simulation. First, we need numpy:
 
 `import numpy as np`
 
