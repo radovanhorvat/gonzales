@@ -24,8 +24,7 @@ Two main simulation types are available:
 
 ## Installation
 
-- clone the repository
-- in the repo root folder, create a virtual environment using `python -m venv venv`
+- create a virtual environment using `python -m venv venv`
 - activate the virtual environment with `source env/bin/activate` (Linux) or `venv\Scripts\activate.bat` (Windows)
 - install using pip: `pip install git+https://github.com/radovanhorvat/nbody.git`
 
