@@ -9,15 +9,12 @@ ctypedef np.float64_t DTYPE_t
 
 
 # ---------------------------------------------------
-# Cython kernel
+# Cython brute force
 # ---------------------------------------------------
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef _calculate_accs_pp(DTYPE_t [:, :] r, DTYPE_t[:] m, double G, double eps):
-    """
-        Brute force kernel.
-    """
     cdef int n = r.shape[0]
     cdef int k = r.shape[1]
     cdef DTYPE_t [:, :] accs = np.zeros([n, k])

@@ -12,7 +12,6 @@ output/
 
 dist/
 build/
-kernels/*.pyd
+lib/*.pyd
 src/cython/*.c
-nbody/kernels/*.c
-kernels/*.cpp
+nbody/lib/*.c

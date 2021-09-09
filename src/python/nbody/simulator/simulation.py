@@ -3,9 +3,9 @@ import logging
 import time
 import h5py
 
-import nbody.kernels.brute_force as kernbf
-import nbody.kernels.octree_c as kernoct_c
-import nbody.kernels.numeric as kernum
+import nbody.lib.brute_force as bf
+import nbody.lib.octree as oct
+import nbody.lib.physics as phy
 from nbody.simulator.utils import ProgressBar
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
@@ -137,10 +137,10 @@ class SimulationBase:
         hdf5_fobj['results/velocity'][step_num, :] = self.space.v
 
     def _write_total_energy(self, hdf5_fobj, step_num):
-        hdf5_fobj['results/energy'][step_num] = kernum.calc_te(self.space.r, self.space.v, self.space.m, self.G, self.eps)
+        hdf5_fobj['results/energy'][step_num] = phy.calc_te(self.space.r, self.space.v, self.space.m, self.G, self.eps)
 
     def _write_angular_momentum(self, hdf5_fobj, step_num):
-        hdf5_fobj['results/angular_momentum'][step_num] = kernum.calc_ang_mom(
+        hdf5_fobj['results/angular_momentum'][step_num] = phy.calc_ang_mom(
             self.space.r, self.space.v, self.space.m)
 
     def _write_results(self, hdf5_fobj, step_num):
@@ -210,9 +210,9 @@ class SimulationBase:
             logging.info('Start simulation')
             # integration
             for i in range(1, n_steps + 1):
-                kernum.advance_r(self.space.r, self.space.v, accs, step_size)
+                phy.advance_r(self.space.r, self.space.v, accs, step_size)
                 new_accs = self.calc_accs()
-                kernum.advance_v(self.space.v, accs, new_accs, step_size)
+                phy.advance_v(self.space.v, accs, new_accs, step_size)
                 accs = new_accs
                 # update hdf5 data
                 self._write_results(res_f, i)
@@ -235,7 +235,7 @@ class PPSimulation(SimulationBase):
         """
         super().__init__(*args, **kwargs)
         self.type = 'Brute force'
-        self.set_kernel(kernbf.calculate_accs_pp)
+        self.set_kernel(bf.calculate_accs_pp)
 
     def __repr__(self):
         return '<{}[{}] N={}, type={}>'.format(type(self).__name__, id(self), len(self.space), self.type)
@@ -266,7 +266,7 @@ class BHSimulation(SimulationBase):
         self.root_width = root_width
         self.root_center = root_center
         self.theta = theta
-        self.set_kernel(kernoct_c.calc_accs_octree)
+        self.set_kernel(oct.calc_accs_octree)
 
     def __repr__(self):
         return '<{}[{}] N={}, type={}>'.format(type(self).__name__, id(self), len(self.space), self.type)

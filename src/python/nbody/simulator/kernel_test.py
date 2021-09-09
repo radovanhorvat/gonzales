@@ -3,7 +3,7 @@ import functools
 import timeit
 
 from nbody.simulator.space import Space
-import nbody.kernels.octree_c as kernoct_c
+import nbody.lib.octree as oct
 
 
 if __name__ == '__main__':
@@ -20,16 +20,7 @@ if __name__ == '__main__':
     eps = 1.0e-3
     theta = 0.75
 
-    #ofp = r'D:\Python_Projects\input_files\cuboid_10_6.hdf5'
     space = Space()
-    #space.from_hdf5(ofp)
     space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
-
-    #accs3 = kernbf.calculate_accs_pp_wrap(space.r, space.m, G, eps)
-    #accs3 = kernoct.calc_accs_octree_wrap(cube_length, 0., 0., 0., space.r, space.m, G, eps, theta)
-
-    #t = timeit.Timer(functools.partial(kernoct.calc_accs_octree_wrap, cube_length, 0., 0., 0., space.r, space.m, G, eps, theta))
-    
-    t = timeit.Timer(functools.partial(kernoct_c.calc_accs_octree, cube_length, 0., 0., 0., space.r, space.m, G, eps, theta))
-    
+    t = timeit.Timer(functools.partial(oct.calc_accs_octree, cube_length, 0., 0., 0., space.r, space.m, G, eps, theta))
     print(t.timeit(1))

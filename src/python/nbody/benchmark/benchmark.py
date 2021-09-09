@@ -8,8 +8,8 @@ import functools
 import json
 
 from nbody.simulator.space import Space
-import nbody.kernels.brute_force as kernbf
-import nbody.kernels.octree_c as kernoct_c
+import nbody.lib.brute_force as bf
+import nbody.lib.octree as oct
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
@@ -61,14 +61,14 @@ class Benchmark:
     def _run_brute_force(self, num_particles):        
         space = Space()
         space.add_cuboid(num_particles, np.array((0., 0., 0.)), 1., 1., 1., vel_func, mass_func)
-        t = timeit.Timer(functools.partial(kernbf.calculate_accs_pp, space.r, space.m, 1.0, 0.))
+        t = timeit.Timer(functools.partial(bf.calculate_accs_pp, space.r, space.m, 1.0, 0.))
         res = t.timeit(5) / 5
         self._results['brute_force_' + str(num_particles)] = res
 
     def _run_barnes_hut(self, num_particles):        
         space = Space()
         space.add_cuboid(num_particles, np.array((0., 0., 0.)), 1., 1., 1., vel_func, mass_func)
-        t = timeit.Timer(functools.partial(kernoct_c.calc_accs_octree, 1., 0., 0., 0., space.r, space.m, 1.0, 0., 0.75))
+        t = timeit.Timer(functools.partial(oct.calc_accs_octree, 1., 0., 0., 0., space.r, space.m, 1.0, 0., 0.75))
         res = t.timeit(5) / 5
         self._results['barnes-hut_' + str(num_particles)] = res
 

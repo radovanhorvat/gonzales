@@ -10,7 +10,7 @@ ctypedef np.float64_t DTYPE_t
 
 
 # ---------------------------------------------------
-# Numerical kernels
+# Physics functions
 # ---------------------------------------------------
 
 @cython.boundscheck(False)
