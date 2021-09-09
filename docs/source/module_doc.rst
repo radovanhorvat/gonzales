@@ -6,4 +6,7 @@ Modules
 
    space
    simulator
+   brute_force
+   octree
+   physics
    viewer
