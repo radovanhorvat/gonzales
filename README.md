@@ -26,7 +26,8 @@ Two main simulation types are available:
 
 - create a virtual environment using `python -m venv venv`
 - activate the virtual environment with `source env/bin/activate` (Linux) or `venv\Scripts\activate.bat` (Windows)
-- install using pip: `pip install git+https://github.com/radovanhorvat/nbody.git`
+- install either directly from GitHub with `pip install git+https://github.com/radovanhorvat/nbody.git`, 
+or from [PyPi](https://pypi.org/project/nbody-solver/) with `pip install nbody-solver`
 
 Now, assuming everything was successful, you can do the following in order to verify everything is working properly:
 

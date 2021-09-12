@@ -53,7 +53,7 @@ extensions = [Extension("nbody.lib.brute_force", sources=[os.path.join(CYTHON_SR
 
 
 setup(
-    name='nbody-solver-test',
+    name='nbody-solver',
     version='0.1.0.dev',
     packages=find_packages(os.path.join('src', 'python')),
     package_dir={'': os.path.join('src', 'python')},
