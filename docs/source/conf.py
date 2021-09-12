@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.join(Path(__file__).parents[2], 'src', 'python'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'nbodysolver'
+project = 'nbody-solver'
 copyright = '2021, Radovan Horvat'
 author = 'Radovan Horvat'
 
