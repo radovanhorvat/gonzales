@@ -26,13 +26,13 @@ Two main simulation types are available:
 
 - create a virtual environment using `python -m venv venv`
 - activate the virtual environment with `source env/bin/activate` (Linux) or `venv\Scripts\activate.bat` (Windows)
-- install either directly from GitHub with `pip install git+https://github.com/radovanhorvat/nbody.git`, 
-or from [PyPi](https://pypi.org/project/nbody-solver/) with `pip install nbody-solver`
+- install from [PyPi](https://pypi.org/project/nbody-solver/) with `pip install nbody-solver` or, alternatively,
+directly from GitHub with `pip install git+https://github.com/radovanhorvat/nbody.git`
 
-Now, assuming everything was successful, you can do the following in order to verify everything is working properly:
+- Now, assuming everything was successful, you can do the following in order to verify everything is working properly:
 
-- run benchmarks with `python -m nbody.benchmark.benchmark`
 - run one of the examples, like the Solar system simulation: `python -m nbody.examples.solar_system`
+- run the performance benchmark suite with `python -m nbody.benchmark.benchmark`
 
 ## Quick start
 
