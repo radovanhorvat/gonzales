@@ -53,7 +53,7 @@ extensions = [Extension("nbody.lib.brute_force", sources=[os.path.join(CYTHON_SR
 
 
 setup(
-    name='nbodytest',
+    name='nbody-solver-test',
     version='0.1.0.dev',
     packages=find_packages(os.path.join('src', 'python')),
     package_dir={'': os.path.join('src', 'python')},
@@ -62,6 +62,8 @@ setup(
     long_description_content_type='text/markdown',
     author='Radovan Horvat',
     author_email='radovan.horvat@gmail.com',
+    url='https://github.com/radovanhorvat/nbody-solver',
+    license='MIT',
     install_requires=['numpy>=1.21.0', 'Cython>=0.29.23', 'h5py>=3.3.0', 'psutil>=5.8.0', 'vispy>=0.7.1',
                       'PyQt5>=5.15.4'],
     ext_modules=cythonize(extensions),
