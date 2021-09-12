@@ -5,6 +5,7 @@ Welcome to nbodysolver's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   about
    install
    quick_start
    module_doc
