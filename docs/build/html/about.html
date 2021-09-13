@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>About &#8212; nbody-solver 0.1.0.dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="author" title="About these documents" href="#" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="install.html" />
+    <link rel="prev" title="Welcome to nbodysolver’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="about">
+<h1>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h1>
+<p><cite>nbody-solver</cite> is a package for simulating collisionless 3D particle systems under Newtonian gravitational
+interaction. It is intented to be a lightweight and easy to use, yet comparatively powerful tool, which uses
+the <a class="reference external" href="https://en.wikipedia.org/wiki/Hierarchical_Data_Format">hdf5</a> file format to store simulation data. Also, it includes a graphical user interface which is capable of
+animating a simulation and efficiently displaying simulation info and results in tabular form to the user.</p>
+<p>Two simulation types are supported: PP-simulations (name derived from Particle-Particle methods, or brute-force
+methods), and <a class="reference external" href="https://en.wikipedia.org/wiki/Barnes%E2%80%93Hut_simulation">BH-simulations</a> (name derived from Barnes-Hut tree code methods) - the former having a computational
+complexity of <span class="math notranslate nohighlight">\(O(n^2)\)</span>, and the latter <span class="math notranslate nohighlight">\(O(n\,log\,n)\)</span>. For both simulations, numerical
+integration of the equations of motion is done using the <a class="reference external" href="https://en.wikipedia.org/wiki/Leapfrog_integration">Leapfrog</a> integration method.</p>
+<p>Functionally, the program consists of three main packages:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nbody.simulator</span></code> - provides interfaces for generating initial conditions and creating and running simulation instances</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nbody.lib</span></code>- consists of functions used to calculate gravitational interactions and values of physical quantities</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nbody.ui</span></code>- defines the graphical user interface</p></li>
+</ul>
+<p>Detailed documentation of these packages can be found in the <a class="reference internal" href="module_doc.html#modules-ref-label"><span class="std std-ref">Modules</span></a> documentation section.</p>
+<p>A typical workflow can be described as follows:</p>
+<ul class="simple">
+<li><p>create initial conditions for the simulation using <code class="docutils literal notranslate"><span class="pre">nbody.simulator.space.Space</span></code></p></li>
+<li><p>create a simulation instance using <code class="docutils literal notranslate"><span class="pre">nbody.simulator.simulation.PPSimulation</span></code> or <code class="docutils literal notranslate"><span class="pre">nbody.simulator.simulation.BHSimulation</span></code></p></li>
+<li><p>run the simulation</p></li>
+<li><p>view generated results using <code class="docutils literal notranslate"><span class="pre">nbody.ui.viewer.run_viewer</span></code></p></li>
+</ul>
+<p>More details can be found in the <a class="reference internal" href="quick_start.html#quick-start-ref-label"><span class="std std-ref">Quick start</span></a> documentation section.</p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">nbody-solver</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_doc.html">Modules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to nbodysolver’s documentation!</a></li>
+      <li>Next: <a href="install.html" title="next chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Radovan Horvat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/about.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
