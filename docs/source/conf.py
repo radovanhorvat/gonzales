@@ -12,9 +12,8 @@
 #
 import os
 import sys
-from pathlib import Path
 
-sys.path.insert(0, os.path.join(Path(__file__).parents[2], 'src', 'python'))
+sys.path.insert(0, os.path.abspath(os.path.join('..', '..', 'src', 'python')))
 
 
 # -- Project information -----------------------------------------------------
