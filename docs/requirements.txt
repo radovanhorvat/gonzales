@@ -6,3 +6,4 @@ h5py>=3.3.0
 psutil>=5.8.0
 vispy>=0.7.1
 PyQt5>=5.15.4
+Sphinx==4.2.0
