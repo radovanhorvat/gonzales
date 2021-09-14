@@ -12,9 +12,11 @@
 #
 import os
 import sys
+import sysconfig
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(Path(__file__).parents[2], 'src', 'python'))
+sys.path.insert(0, os.path.abspath(sysconfig.get_paths()['purelib']))
 
 
 # -- Project information -----------------------------------------------------
