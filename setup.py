@@ -67,4 +67,5 @@ setup(
     install_requires=['numpy>=1.21.0', 'Cython>=0.29.23', 'h5py>=3.3.0', 'psutil>=5.8.0', 'vispy>=0.7.1',
                       'PyQt5>=5.15.4'],
     ext_modules=cythonize(extensions),
+    script_args = ['build_ext', '--build-lib=src/python']
 )
