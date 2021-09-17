@@ -3,7 +3,7 @@ import sys
 import numpy as np
 from pathlib import Path
 from Cython.Build import cythonize
-from setuptools.command.build_ext import build_ext
+#from setuptools.command.build_ext import build_ext
 from setuptools import setup, Extension, find_packages
 
 
@@ -54,14 +54,14 @@ extensions = [Extension("nbody.lib.brute_force", sources=[os.path.join(CYTHON_SR
               ]
 
 
-class custom_build_ext(build_ext):
-    def initialize_options(self):
-        super().initialize_options()
-        self.build_lib = PYTHON_SRC_PATH
+# class custom_build_ext(build_ext):
+#     def initialize_options(self):
+#         super().initialize_options()
+#         self.build_lib = PYTHON_SRC_PATH
 
 
 setup(
-    name='nbody-solver',
+    name='nbody-solver-test',
     version='0.1.0.dev2',
     packages=find_packages(PYTHON_SRC_PATH),
     package_dir={'': PYTHON_SRC_PATH},
@@ -75,5 +75,5 @@ setup(
     install_requires=['numpy>=1.21.0', 'Cython>=0.29.23', 'h5py>=3.3.0', 'psutil>=5.8.0', 'vispy>=0.7.1',
                       'PyQt5>=5.15.4'],
     ext_modules=cythonize(extensions),
-    cmdclass={'build_ext': custom_build_ext},
+    #cmdclass={'build_ext': custom_build_ext},
 )
