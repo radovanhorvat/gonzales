@@ -14,9 +14,10 @@ import os
 import sys
 from pathlib import Path
 
+root = Path(__file__).parents[2]
 my_path = os.path.join(Path(__file__).parents[2], 'src', 'python')
 sys.path.insert(0, my_path)
-for x in os.walk(my_path):
+for x in os.walk(root):
   print("---------------", x[0])
   sys.path.insert(0, x[0])
 
