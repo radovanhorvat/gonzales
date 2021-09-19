@@ -14,9 +14,11 @@ import os
 import sys
 from pathlib import Path
 
-print("===================", os.path.join(Path(__file__).parents[2]))
-sys.path.insert(0, os.path.join(Path(__file__).parents[2]))
-sys.path.insert(0, os.path.join(Path(__file__).parents[2], 'src', 'python'))
+my_path = os.path.join(Path(__file__).parents[2], 'src', 'python')
+sys.path.insert(0, my_path)
+for x in os.walk(my_path):
+  print("---------------", x[0])
+  sys.path.insert(0, x[0])
 
 
 # -- Project information -----------------------------------------------------
