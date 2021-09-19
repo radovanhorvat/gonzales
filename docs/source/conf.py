@@ -18,8 +18,10 @@ root = Path(__file__).parents[2]
 my_path = os.path.join(Path(__file__).parents[2], 'src', 'python')
 sys.path.insert(0, my_path)
 for x in os.walk(root):
-  print("---------------", x[0])
-  sys.path.insert(0, x[0])
+	if os.path.join('nbody', 'lib') in x[0]:
+		sys.path.insert(0, x[0])
+		break
+print("XXXXXXXXXXXXXXXXXXXXXxx", sys.path)
 
 
 # -- Project information -----------------------------------------------------
