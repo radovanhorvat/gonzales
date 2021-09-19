@@ -14,12 +14,10 @@ import os
 import sys
 from pathlib import Path
 
+print("===================", os.path.join(Path(__file__).parents[2]))
+sys.path.insert(0, os.path.join(Path(__file__).parents[2]))
 sys.path.insert(0, os.path.join(Path(__file__).parents[2], 'src', 'python'))
-sys.path.insert(0, os.path.join(Path(__file__).parents[2], 'src', 'python', 'nbody'))
-sys.path.insert(0, os.path.join(Path(__file__).parents[2], 'src', 'python', 'nbody', 'lib'))
-print("=========================")
-print(sys.path)
-print("=========================")
+
 
 # -- Project information -----------------------------------------------------
 
