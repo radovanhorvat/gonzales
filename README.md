@@ -43,6 +43,7 @@ Let us set up a minimal brute force simulation. First, we need numpy:
 Let's create initial conditions for 1000 particles:
 
 `>>> r = np.random.uniform(-1, 1, (1000, 3))`
+
 `>>> v = np.zeros((1000, 3)`
 
 Let's add a mass vector:
@@ -84,19 +85,12 @@ That means the total energy will be written every 10 steps. Now, Let's run the s
 Some neat output should appear, along with a progress bar:
 
 ```
-
 2021-09-06 20:30:59,397 INFO Simulation - type=Brute force, N_particles=1000, N_steps=100
-
 2021-09-06 20:30:59,398 INFO Creating datasets
-
 2021-09-06 20:30:59,402 INFO Writing initial data
-
 2021-09-06 20:30:59,403 INFO Calculating initial accelerations
-
 2021-09-06 20:30:59,405 INFO Start simulation
-
 Progress: [████████████████████████████████████████] 100 %
-
 2021-09-06 20:30:59,640 INFO End simulation
 ```
 
