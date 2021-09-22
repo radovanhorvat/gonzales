@@ -9,6 +9,13 @@ class Space:
     Class used to represent a 3D space which contains particles.
     """
     def __init__(self, r=None, v=None, m=None):
+        """
+        Initialize the space.
+
+        :param r: N x 3 numpy array or None, position vectors of the particles
+        :param v: N x 3 numpy array or None, velocity vectors of the particles
+        :param m: N x 1 numpy array or None, mass vector
+        """
         self.r = np.empty(shape=(0, 3)) if r is None else r
         self.v = np.empty(shape=(0, 3)) if v is None else v
         self.m = np.array([]) if m is None else m
