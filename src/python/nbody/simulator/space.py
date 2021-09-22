@@ -8,10 +8,10 @@ class Space:
     """
     Class used to represent a 3D space which contains particles.
     """
-    def __init__(self):
-        self.r = np.empty(shape=(0, 3))
-        self.v = np.empty(shape=(0, 3))
-        self.m = np.array([])
+    def __init__(self, r=None, v=None, m=None):
+        self.r = np.empty(shape=(0, 3)) if r is None else r
+        self.v = np.empty(shape=(0, 3)) if v is None else v
+        self.m = np.array([]) if m is None else m
 
     def to_hdf5(self, filepath):
         """
