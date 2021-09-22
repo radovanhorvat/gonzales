@@ -50,13 +50,11 @@ Let's add a mass vector:
 
 `>>> m = np.ones((1000)`
 
-Then, let's import the `Space` class and set the data:
+Then, let's import the `Space` class and initialize it with the data:
 
 `>>> from nbody.simulator.space import Space`
 
-`>>> s = Space()`
-
-`>>> s.add_particles(r, v, m)`
+`>>> s = Space(r, v, m)`
 
 Now, we're ready to use the `PPSimulation` class:
 
