@@ -20,3 +20,9 @@ nbody.simulator.simulation
      :show-inheritance:
      :members:
      :special-members: __init__
+
+|
+
+* .. autoclass:: ResultReader
+     :members:
+     :special-members: __init__
