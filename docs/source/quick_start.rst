@@ -3,6 +3,8 @@
 Quick start
 ===========
 
+.. rubric:: Initialization
+
 Let us set up a minimal brute force simulation. First, we need numpy:
 
 ``import numpy as np``
@@ -22,6 +24,8 @@ Then, let's import the ``Space`` class and initialize it with the data:
 ``>>> from nbody.simulator.space import Space``
 
 ``>>> s = Space(r, v, m)``
+
+.. rubric:: Simulation
 
 Now, we're ready to use the ``PPSimulation`` class:
 
@@ -59,6 +63,8 @@ Some neat output should appear, along with a progress bar:
    Progress: [████████████████████████████████████████] 100 %
    2021-09-06 20:30:59,640 INFO End simulation
 
+.. rubric:: Postprocessing
+
 Great. If you came this far, the output was written to the specified hdf5 file. Let's first
 see how to browse the output with our ``ResultReader``:
 
@@ -83,6 +89,9 @@ Boring? Well, let's demonstrate the viewer:
 ``>>> run_viewer(fp)``
 
 As you can see, the Viewer can animate the simulation, read the results for each step and display some basic simulation info.
+
+.. rubric:: Something different
+
 The animation above probably wasn't very interesting, so let's generate something that looks a bit better,
 and also demonstrate the capabilities of the ``BHSimulation`` class. First, let's clear all the existing particles:
 
