@@ -1,2 +1,35 @@
 Installation
 ============
+
+`nbody-solver` is released as a source distribution, which means that the C and Cython extensions will
+be built during the installation process. Hence, a C compiler (typically GCC for Unix-based systems or Microsoft
+Visual Studio for Windows) should be available. Other installation and setup dependencies shall be handled by
+``pip``.
+
+Prior to installation, it is strongly recommended to create and activate a virtual environment.
+
+
+1. Latest release
+-----------------
+
+To install the latest release from https://pypi.org/project/nbody-solver/, simply install with:
+
+``pip install nbody-solver``
+
+
+2. Development version
+----------------------
+
+To install the current development version from https://github.com/radovanhorvat/nbody-solver, do:
+
+``pip install git+https://github.com/radovanhorvat/nbody.git``
+
+
+3. Installation for development
+-------------------------------
+
+If you plan to experiment with the code, you should:
+
+1. Clone the repository with ``git clone https://github.com/radovanhorvat/nbody-solver.git``
+2. Create and activate a virtual environment
+3. Run ``pip install -e .``
