@@ -39,15 +39,15 @@ if __name__ == '__main__':
     space = Space()
     #space.add_cuboid(n, np.array((0., 0., 0.)), cube_length, cube_length, cube_length, vel_func, mass_func)
     #space.add_sphere(n, np.array((0., 0., 0.)), 1., vel_func, mass_func)
-    space.add_plummer(10000, np.array([0., 0. ,0.]))
+    space.add_plummer(n, np.array([0., 0. ,0.]))
     #space.add_sphere(n, np.array((-2., 0., 0.)), .5, vel_func, mass_func)
 
     ofp = os.path.abspath(os.path.join(os.path.dirname(__file__), 'output', 'test_01.hdf5'))
     #s1 = PPSimulation(space, ofp, G, eps)
     s1 = BHSimulation(space, ofp, G, eps, 100000., np.array((0., 0., 0.)), theta)
     #s1.add_result('velocity', (n, 3), res_frequency=50)
-    s1.add_result('energy', 10)
-    s1.add_result('angular_momentum', 50)
+    #s1.add_result('energy', 10)
+    #s1.add_result('angular_momentum', 50)
     
     s1.run(n_steps, step_size)
 

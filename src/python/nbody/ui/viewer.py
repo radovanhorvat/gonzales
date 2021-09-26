@@ -90,7 +90,7 @@ class WidgetWithLabel(QWidget):
 class MainWidget(QWidget):
     def __init__(self, parent):
         super(MainWidget, self).__init__(parent)
-        self.layout = QVBoxLayout(self)
+        layout = QVBoxLayout()
 
         self.tabs = QTabWidget()
         self.tab1 = QWidget()
@@ -101,9 +101,9 @@ class MainWidget(QWidget):
         self.tabs.addTab(self.tab2, "Results")
         self.tabs.addTab(self.tab3, "Info")
 
-        self.tab1.layout = QVBoxLayout(self)
-        self.tab2.layout = QVBoxLayout(self)
-        self.tab3.layout = QVBoxLayout(self)
+        tab1_layout = QVBoxLayout()
+        tab2_layout = QVBoxLayout()
+        tab3_layout = QVBoxLayout()
 
         canvas = vispy.scene.SceneCanvas(keys='interactive', show=True)
         view = canvas.central_widget.add_view()
@@ -121,9 +121,9 @@ class MainWidget(QWidget):
         self.pause_button.clicked.connect(self.parent().on_pause)
         
         # tab1
-        self.tab1.layout.addWidget(play_button)
-        self.tab1.layout.addWidget(self.pause_button)
-        self.tab1.layout.addWidget(self.view_widget)
+        tab1_layout.addWidget(play_button)
+        tab1_layout.addWidget(self.pause_button)
+        tab1_layout.addWidget(self.view_widget)
         self.step_label = QLabel()
         self.filename_label = QLabel()
 
@@ -132,8 +132,8 @@ class MainWidget(QWidget):
         info_box.addWidget(self.filename_label)
         info_box.addWidget(self.step_label)
         info_groupbox.setLayout(info_box)
-        self.tab1.layout.addWidget(info_groupbox)
-        self.tab1.setLayout(self.tab1.layout)
+        tab1_layout.addWidget(info_groupbox)
+        self.tab1.setLayout(tab1_layout)
 
         # tab2
         self.combo = WidgetWithLabel(self, QComboBox(self), 'Result: ')
@@ -144,20 +144,20 @@ class MainWidget(QWidget):
         self.combo.wgt.activated.connect(self.parent().on_combo_activated)
         self.slider.wgt.sld.valueChanged.connect(self.parent().on_slider_changed)
 
-        self.tab2.layout.addWidget(self.combo)
-        self.tab2.layout.addWidget(self.slider)
-        self.tab2.layout.addWidget(self.table)
-        self.tab2.setLayout(self.tab2.layout)
+        tab2_layout.addWidget(self.combo)
+        tab2_layout.addWidget(self.slider)
+        tab2_layout.addWidget(self.table)
+        self.tab2.setLayout(tab2_layout)
 
         #tab3
         self.info_table = QTableWidget()
         self.info_table.verticalHeader().setVisible(False)
         self.info_table.horizontalHeader().setVisible(False)
-        self.tab3.layout.addWidget(self.info_table)
-        self.tab3.setLayout(self.tab3.layout)
+        tab3_layout.addWidget(self.info_table)
+        self.tab3.setLayout(tab3_layout)
 
-        self.layout.addWidget(self.tabs)
-        self.setLayout(self.layout)
+        layout.addWidget(self.tabs)
+        self.setLayout(layout)
 
 
 class NBodyViewer(QMainWindow):
