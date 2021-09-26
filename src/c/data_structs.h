@@ -16,8 +16,6 @@ typedef struct {
 
 particle* particle_make(double x, double y, double z, double m);
 
-void particle_destroy(particle* p);
-
 void particle_print(particle* p);
 
 void particles_print(particle** pcont, int n);
@@ -27,12 +25,6 @@ double randrange(double min, double max);
 particle** make_random_particles(int n, double min_r, double max_r, double min_m, double max_m);
 
 particle** make_slice(particle** pcont, int i1, int i2);
-
-particle** make_subset(particle** pcont, int* indices, int k);
-
-particle** make_copy(particle** pcont, int n);
-
-void particles_destroy(particle** pcont, int n);
 
 particle** make_from_arrays(int n, double* points, double* masses);
 

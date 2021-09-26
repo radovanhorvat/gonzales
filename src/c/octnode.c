@@ -45,18 +45,6 @@ void octree_print(octnode* root) {
 }
 
 
-void octnode_destroy(octnode* nd) {
-	// todo: this may be wrong
-	//particles_destroy(nd->pnts, LEAF_SIZE - nd->leaf_cap);
-	for (int i = 0; i < 8; i++) {
-		if (nd->children[i] == NULL)
-			continue;
-		octnode_destroy(nd->children[i]);
-	}	
-	free(nd);
-}
-
-
 void octnode_insert_point(octnode* nd, particle* pnt) {
 	if (nd->leaf_cap > 0) {
 		nd->pnts[LEAF_SIZE - nd->leaf_cap] = pnt;

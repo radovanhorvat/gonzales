@@ -21,11 +21,6 @@ particle* particle_make(double x, double y, double z, double m) {
 }
 
 
-void particle_destroy(particle* p) {
-	free(p);
-}
-
-
 void particle_print(particle* p) {
 	printf("<particle: r=(%f, %f, %f), m=%f, a=(%f, %f, %f)>\n", p->x, p->y, p->z, p->m, p->a_x, p->a_y, p->a_z);
 }
@@ -64,33 +59,6 @@ particle** make_slice(particle** pcont, int i1, int i2) {
 	for (int i = 0; i < n; i++)
 		pslice[i] = pcont[i1 + i];
 	return pslice;
-}
-
-
-particle** make_subset(particle** pcont, int* indices, int k) {
-	particle** psub = malloc(k * sizeof(particle*));
-	int j;
-	for (int i = 0; i < k; i++) {
-		j = indices[i];
-		psub[i] = pcont[j];
-	}	
-	return psub;
-}
-
-
-particle** make_copy(particle** pcont, int n) {
-	particle** pcont_copy = malloc(n * sizeof(particle*));
-	for (int i = 0; i < n; i++) {
-		pcont_copy[i] = particle_make(pcont[i]->x, pcont[i]->y, pcont[i]->z, pcont[i]->m);
-	}
-	return pcont_copy;	
-}
-
-
-void particles_destroy(particle** pcont, int n) {
-	for (int i = 0; i < n; i++)
-		free(pcont[i]);
-	free(pcont);
 }
 
 

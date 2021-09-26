@@ -19,8 +19,6 @@ void octnode_print(octnode* nd);
 
 void octree_print(octnode* root);
 
-void octnode_destroy(octnode* nd);
-
 void octnode_insert_point(octnode* nd, particle* pnt);
 
 int octnode_get_child_id(octnode* nd, double x, double y, double z);
