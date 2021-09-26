@@ -1,13 +1,9 @@
 from datetime import datetime
 
-import h5py
-import numpy as np
-
-from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QWidget, QPushButton, QLabel, QGroupBox,
+from PyQt5.QtWidgets import (QMainWindow, QWidget, QPushButton, QLabel, QGroupBox,
                              QAction, QFileDialog, QApplication, QVBoxLayout, QSlider, QTabWidget,
                              QTableWidgetItem, QComboBox, QHBoxLayout, QTableView, QTableWidget)
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt, QAbstractTableModel, QTimer
+from PyQt5.QtCore import Qt, QAbstractTableModel, QTimer, QModelIndex
 
 import sys
 from pathlib import Path
@@ -30,23 +26,23 @@ class TableModel(QAbstractTableModel):
         self._data = data
         self._res_name = res_name
 
-    def data(self, index, role):
+    def data(self, index, role=Qt.DisplayRole):
         if role == Qt.DisplayRole:
             if len(self._data.shape) > 1:
                 return str(self._data[index.row()][index.column()])
             return str(self._data[index.column()])
 
-    def rowCount(self, index):
+    def rowCount(self, parent=QModelIndex()):
         if len(self._data.shape) > 1:
             return self._data.shape[0]
         return 1
 
-    def columnCount(self, index):
+    def columnCount(self, parent=QModelIndex()):
         if len(self._data.shape) > 1:
             return self._data.shape[1]
         return self._data.shape[0]
 
-    def headerData(self, section, orientation, role):
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
         labels = self._header_label_map.get(self._res_name)
         if labels and role == Qt.DisplayRole and orientation == Qt.Horizontal:
             return labels[section]            
