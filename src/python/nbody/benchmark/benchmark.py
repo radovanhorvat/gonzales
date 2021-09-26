@@ -24,8 +24,8 @@ def mass_func(pos_vec):
 
 
 class Benchmark:
-    def __init__(self, write_results=True):
-        self._write_results = write_results
+    def __init__(self, output_filename=None):
+        self._output_filename = output_filename if output_filename is not None else 'results.json'
         self._results = {}
 
     @staticmethod
@@ -53,9 +53,8 @@ class Benchmark:
         self._run_barnes_hut(500000)
         logging.info('Running Barnes-Hut, N=1000000, theta=0.75')
         self._run_barnes_hut(1000000)
-        if self._write_results:
-            logging.info('Dumping results to json')
-            self._dump_to_json()
+        logging.info('Dumping results to json')
+        self._dump_to_json()
         logging.info('End benchmark')
 
     def _run_brute_force(self, num_particles):        
@@ -73,8 +72,7 @@ class Benchmark:
         self._results['barnes-hut_' + str(num_particles)] = res
 
     def _dump_to_json(self):
-        ofp = os.path.abspath(os.path.join(os.path.dirname(__file__), 'results.json'))
-        with open(ofp, 'w') as fp:
+        with open(self._output_filename, 'w') as fp:
             json.dump(self._results, fp)
 
 
