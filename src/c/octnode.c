@@ -174,7 +174,6 @@ void octree_calc_accs(octnode* nd, particle** psub, int k, params* par) {
 	int cnt;
 	if (nd->leaf_cap >= 0) {
 		int n = LEAF_SIZE - nd->leaf_cap;
-		//calc_accs(nd->pnts, n, par);		
 		for (int i = 0; i < k; i++) {
 			for (int j = 0; j < n; j++) {
 				calc_accs_particles(psub[i], nd->pnts[j], par);

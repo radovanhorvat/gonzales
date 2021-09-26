@@ -7,8 +7,6 @@
 ------------------------------------ */
 
 typedef struct {
-	//vec3d* r;
-	//vec3d* a;
 	double x, y, z, a_x, a_y, a_z, m;
 
 } particle;
