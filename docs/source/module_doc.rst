@@ -12,3 +12,4 @@ Modules
    octree
    physics
    viewer
+   benchmark

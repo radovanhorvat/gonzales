@@ -33,7 +33,7 @@ a virtual environment. For more details, see the [installation docs](https://nbo
 After installing, you can do the following in order to verify everything is working correctly:
 
 - run one of the examples, like the Solar system simulation: `python -m nbody.examples.solar_system`
-- run the performance benchmark suite with `python -m nbody.benchmark.benchmark`
+- run the default performance benchmark suite with `import nbody; nbody.run_default_benchmark()`
 - run the quick start snippet below
 
 ## Quick start snippet
