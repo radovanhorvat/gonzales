@@ -119,7 +119,8 @@ void octree_build_omp(octnode* root, particle** pcont, int n) {
 		octree_build(root, pcont, n);
 		return;
 	}
-	int n_cores = omp_get_max_threads();
+	int max_threads = omp_get_max_threads();
+	int n_cores = (max_threads <= 8) ? max_threads : 8;
 	int* child_ids = malloc(n * sizeof(int));
 	int** thread_assign = malloc(n_cores * sizeof(int*));
 	int* thread_assign_cnt = malloc(n_cores * sizeof(int));
