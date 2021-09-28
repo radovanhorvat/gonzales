@@ -55,7 +55,7 @@ extensions = [Extension("gonzales.lib.brute_force", sources=[os.path.join(CYTHON
 
 setup(
     name='gonzales',
-    version='0.1.0',
+    version='0.1.1',
     packages=find_packages(PYTHON_SRC_PATH),
     package_dir={'': PYTHON_SRC_PATH},
     description='N-body simulator',

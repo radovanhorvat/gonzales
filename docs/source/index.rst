@@ -9,6 +9,7 @@ gonzales documentation
    install
    quick_start
    module_doc
+   release_history
 
 
 Indices and tables
