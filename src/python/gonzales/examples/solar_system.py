@@ -1,10 +1,10 @@
 import os
 import numpy as np
 
-from nbody.simulator.space import Space
-from nbody.simulator.simulation import PPSimulation
+from gonzales.simulator.space import Space
+from gonzales.simulator.simulation import PPSimulation
 
-from nbody.ui.viewer import run_viewer
+from gonzales.ui.viewer import run_viewer
 
 
 if __name__ == '__main__':

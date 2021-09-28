@@ -1,7 +1,7 @@
-nbody.simulator.space
-=====================
+gonzales.simulator.space
+========================
 
-.. currentmodule:: nbody.simulator.space
+.. currentmodule:: gonzales.simulator.space
 
 * .. autoclass:: Space
      :members:

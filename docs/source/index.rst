@@ -1,5 +1,5 @@
-Welcome to nbodysolver's documentation!
-=======================================
+gonzales documentation
+======================
 
 .. toctree::
    :maxdepth: 2

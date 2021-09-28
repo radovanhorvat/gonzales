@@ -1,7 +1,7 @@
 About
 =====
 
-`nbody-solver` is a package for simulating collisionless 3D particle systems under Newtonian gravitational
+`gonzales` is a package for simulating collisionless 3D particle systems under Newtonian gravitational
 interaction. It is intented to be a lightweight and easy to use, yet comparatively powerful tool, which uses
 the hdf5_ file format to store simulation data. Also, it includes a graphical user interface which is capable of
 animating a simulation and efficiently displaying simulation info and results in tabular form to the user.
@@ -13,18 +13,19 @@ integration of the equations of motion is done using the Leapfrog_ integration m
 
 Functionally, the program consists of three main packages:
 
-- ``nbody.simulator`` - provides interfaces for generating initial conditions and creating and running simulation instances
-- ``nbody.lib``- consists of functions used to calculate gravitational interactions and values of physical quantities
-- ``nbody.ui``- defines the graphical user interface
+- ``gonzales.simulator`` - provides interfaces for generating initial conditions and creating and running simulation instances
+- ``gonzales.lib``- consists of functions used to calculate gravitational interactions and values of physical quantities
+- ``gonzales.ui``- defines the graphical user interface
+- ``gonzales.benchmark``- tools for running benchmark suites
 
 Detailed documentation of these packages can be found in the :ref:`modules-ref-label` documentation section.
 
 A typical workflow can be described as follows:
 
-- create initial conditions for the simulation using ``nbody.simulator.space.Space``
-- create a simulation instance using ``nbody.simulator.simulation.PPSimulation`` or ``nbody.simulator.simulation.BHSimulation``
+- create initial conditions for the simulation using ``gonzales.simulator.space.Space``
+- create a simulation instance using ``gonzales.simulator.simulation.PPSimulation`` or ``gonzales.simulator.simulation.BHSimulation``
 - run the simulation
-- view generated results using ``nbody.ui.viewer.run_viewer``
+- view generated results using ``gonzales.ui.viewer.run_viewer``
 
 More details can be found in the :ref:`quick-start-ref-label` documentation section.
 

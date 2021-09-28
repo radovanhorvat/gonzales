@@ -1,7 +1,7 @@
-nbody.lib.physics
-=================
+gonzales.lib.physics
+====================
 
-.. currentmodule:: nbody.lib.physics
+.. currentmodule:: gonzales.lib.physics
 
 * .. autofunction:: calc_com(r, m)
 

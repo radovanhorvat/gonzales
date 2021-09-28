@@ -1,4 +1,4 @@
-# nbody
+# gonzales
 
 A 3D N-body simulator. 
 
@@ -18,7 +18,7 @@ Two main simulation types are available:
 
 ## Documentation
 
-Documentation can be found [here](https://nbody-solver.readthedocs.io/en/latest/).
+Documentation can be found [here](https://gonzales.readthedocs.io/en/latest/).
 
 ## Requirements
 
@@ -27,19 +27,19 @@ Documentation can be found [here](https://nbody-solver.readthedocs.io/en/latest/
 
 ## Installation
 
-- install from [PyPi](https://pypi.org/project/nbody-solver/) with `pip install nbody-solver`, preferably using 
-a virtual environment. For more details, see the [installation docs](https://nbody-solver.readthedocs.io/en/latest/install.html)
+- install from [PyPi](https://pypi.org/project/nbody-solver/) with `pip install gonzales`, preferably using 
+a virtual environment. For more details, see the [installation docs](https://gonzales.readthedocs.io/en/latest/install.html)
 
 After installing, you can do the following in order to verify everything is working correctly:
 
-- run one of the examples, like the Solar system simulation: `python -m nbody.examples.solar_system`
-- run the default performance benchmark suite with `import nbody; nbody.run_default_benchmark()`
+- run one of the examples, like the Solar system simulation: `python -m gonzales.examples.solar_system`
+- run the default performance benchmark suite with `import gonzales; gonzales.run_default_benchmark()`
 - run the quick start snippet below
 
 ## Quick start snippet
 
 ```
-import nbody
+import gonzales as gnz
 import numpy as np
 
 # number of particles, gravitational constant and softening length
@@ -55,12 +55,12 @@ m = np.ones(N)
 fn = 'results.hdf5'
 
 # particle container
-s = nbody.Space(r, v, m)
+s = gnz.Space(r, v, m)
 
 # Barnes-Hut simulation
-sim = nbody.BHSimulation(s, fn, G, eps, 1000, np.zeros(3), 0.75)
+sim = gnz.BHSimulation(s, fn, G, eps, 1000, np.zeros(3), 0.75)
 sim.run(100, 0.01)
 
 # Viewer for animation and results
-nbody.run_viewer(fn)
+gnz.run_viewer(fn)
 ```

@@ -6,9 +6,9 @@ import numpy as np
 import functools
 import json
 
-from nbody.simulator.space import Space
-import nbody.lib.brute_force as bf
-import nbody.lib.octree as oct
+from gonzales.simulator.space import Space
+import gonzales.lib.brute_force as bf
+import gonzales.lib.octree as oct
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
@@ -45,7 +45,7 @@ class PPBenchmarkConfig(BenchmarkConfigBase):
         """
         Executes the calculation.
 
-        :param space: instance of nbody.simulator.space
+        :param space: instance of gonzales.simulator.space
         """
         t = timeit.Timer(functools.partial(bf.calculate_accs_pp, space.r, space.m, 1.0, 0.))
         res = t.timeit(self.num_exec) / self.num_exec
@@ -71,7 +71,7 @@ class BHBenchmarkConfig(BenchmarkConfigBase):
         """
         Executes the calculation.
 
-        :param space: instance of nbody.simulator.space
+        :param space: instance of gonzales.simulator.space
         """
         t = timeit.Timer(functools.partial(oct.calc_accs_octree, 1., 0., 0., 0., space.r, space.m, 1.0, 0., self.theta))
         res = t.timeit(self.num_exec) / self.num_exec

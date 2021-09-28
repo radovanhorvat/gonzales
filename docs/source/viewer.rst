@@ -1,6 +1,6 @@
-nbody.ui.viewer
-===============
+gonzales.ui.viewer
+==================
 
-.. currentmodule:: nbody.ui.viewer
+.. currentmodule:: gonzales.ui.viewer
 
 * .. autofunction:: run_viewer

@@ -3,10 +3,10 @@ import logging
 import time
 import h5py
 
-import nbody.lib.brute_force as bf
-import nbody.lib.octree as oct
-import nbody.lib.physics as phy
-from nbody.simulator.utils import ProgressBar
+import gonzales.lib.brute_force as bf
+import gonzales.lib.octree as oct
+import gonzales.lib.physics as phy
+from gonzales.simulator.utils import ProgressBar
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 

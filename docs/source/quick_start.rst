@@ -21,7 +21,7 @@ Next, add a mass vector:
 
 Then, let's import the ``Space`` class and initialize it with the data:
 
-``>>> from nbody.simulator.space import Space``
+``>>> from gonzales.simulator.space import Space``
 
 ``>>> s = Space(r, v, m)``
 
@@ -29,7 +29,7 @@ Then, let's import the ``Space`` class and initialize it with the data:
 
 Now, we're ready to use the ``PPSimulation`` class:
 
-``>>> from nbody.simulator.simulation import PPSimulation``
+``>>> from gonzales.simulator.simulation import PPSimulation``
 
 Let's first set an output filepath, where the results will be stored:
 
@@ -68,7 +68,7 @@ Some neat output should appear, along with a progress bar:
 Great. If you came this far, the output was written to the specified hdf5 file. Let's first
 see how to browse the output with our ``ResultReader``:
 
-``>>> from nbody.simulator.simulation import ResultReader``
+``>>> from gonzales.simulator.simulation import ResultReader``
 
 ``>>> r = ResultReader(fp)``
 
@@ -84,7 +84,7 @@ OK, let's inspect some specific result for a specific step number:
 
 Boring? Well, let's demonstrate the viewer:
 
-``>>> from nbody.ui.viewer import run_viewer``
+``>>> from gonzales.ui.viewer import run_viewer``
 
 ``>>> run_viewer(fp)``
 

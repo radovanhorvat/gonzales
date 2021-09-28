@@ -1,9 +1,9 @@
 import numpy as np
 
-from nbody.simulator.space import Space
-from nbody.simulator.utils import calculate_relative_error
-import nbody.lib.brute_force as bf
-import nbody.lib.octree as oct
+from gonzales.simulator.space import Space
+from gonzales.simulator.utils import calculate_relative_error
+import gonzales.lib.brute_force as bf
+import gonzales.lib.octree as oct
 
 
 def vel_func(pos_vec):

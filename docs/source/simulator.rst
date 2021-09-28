@@ -1,7 +1,7 @@
-nbody.simulator.simulation
-==========================
+gonzales.simulator.simulation
+=============================
 
-.. currentmodule:: nbody.simulator.simulation
+.. currentmodule:: gonzales.simulator.simulation
 
 * .. autoclass:: SimulationBase
      :members:

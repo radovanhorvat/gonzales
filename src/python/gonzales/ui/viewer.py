@@ -8,7 +8,7 @@ from PyQt5.QtCore import Qt, QAbstractTableModel, QTimer, QModelIndex
 import sys
 from pathlib import Path
 
-from nbody.simulator.simulation import ResultReader
+from gonzales.simulator.simulation import ResultReader
 
 import vispy
 import vispy.scene

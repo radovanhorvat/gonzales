@@ -1,6 +1,6 @@
 import numpy as np
 
-import nbody.lib.physics as phy
+import gonzales.lib.physics as phy
 
 
 def test_com():

@@ -5,8 +5,8 @@ import numpy as np
 from copy import deepcopy
 from contextlib import contextmanager
 
-from nbody.simulator.space import Space
-import nbody.simulator.simulation as sim
+from gonzales.simulator.space import Space
+import gonzales.simulator.simulation as sim
 
 
 # ---------------------------------------------------------

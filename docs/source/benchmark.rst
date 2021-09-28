@@ -1,7 +1,7 @@
-nbody.benchmark.benchmark
-=========================
+gonzales.benchmark.benchmark
+============================
 
-.. currentmodule:: nbody.benchmark.benchmark
+.. currentmodule:: gonzales.benchmark.benchmark
 
 * .. autoclass:: BenchmarkConfigBase
      :members:

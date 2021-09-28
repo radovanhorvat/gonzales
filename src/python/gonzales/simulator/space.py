@@ -1,7 +1,7 @@
 import h5py
 import numpy as np
 
-from nbody.simulator.utils import to_cartesian
+from gonzales.simulator.utils import to_cartesian
 
 
 class Space:
