@@ -27,7 +27,7 @@ Documentation can be found [here](https://gonzales.readthedocs.io/en/latest/).
 
 ## Installation
 
-- install from [PyPi](https://pypi.org/project/nbody-solver/) with `pip install gonzales`, preferably using 
+- install from [PyPi](https://pypi.org/project/gonzales/) with `pip install gonzales`, preferably using 
 a virtual environment. For more details, see the [installation docs](https://gonzales.readthedocs.io/en/latest/install.html)
 
 After installing, you can do the following in order to verify everything is working correctly:

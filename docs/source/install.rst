@@ -11,7 +11,7 @@ Prior to installation, it is strongly recommended to create and activate a virtu
 
 .. rubric:: Latest release
 
-To install the latest release from https://pypi.org/project/nbody-solver/, simply install with:
+To install the latest release from https://pypi.org/project/gonzales/, simply install with:
 
 ``pip install gonzales``
 
