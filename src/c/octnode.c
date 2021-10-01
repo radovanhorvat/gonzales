@@ -30,8 +30,19 @@ octnode* octnode_make(double w, double x, double y, double z) {
 	return nd;
 }
 
+void octnode_free(octnode* nd) {
+    if (nd == NULL)
+        return;
+    for (int i = 0; i < 8; i++) {
+        octnode_free(nd->children[i]);
+    }
+    if (nd->leaf_cap > 0)
+        free(nd->pnts);
+    free(nd);
+}
+
 void octnode_print(octnode* nd) {
-	printf("<octnode: %f, %f, %f [%f, %d]>\n", nd->r_x, nd->r_y, nd->r_z, nd->w, nd->leaf_cap);
+    printf("<octnode: %f, %f, %f [%f, %d]>\n", nd->r_x, nd->r_y, nd->r_z, nd->w, nd->leaf_cap);
 }
 
 
@@ -165,6 +176,13 @@ void octree_build_omp(octnode* root, particle** pcont, int n) {
 	root->R_y *= ff;
 	root->R_z *= ff;
 
+	free(child_ids);
+	free(thread_assign_cnt);
+	for (int i = 0; i < n_cores; i++) {
+	    free(thread_assign[i]);
+	}
+	free(thread_assign);
+
 }
 
 
@@ -242,5 +260,9 @@ double* calc_accs_wrap(int n, double* points, double* masses, double G, double e
 	params* par = params_make(G, eps, theta);
 	octree_build_omp(root, pcont, n);
 	octree_calc_accs_omp(root, pcont, n, par);
-	return accs_from_pcont(pcont, n);
+	double* accs = accs_from_pcont(pcont, n);
+	free(par);
+	pcont_free(pcont, n);
+	octnode_free(root);
+	return accs;
 }

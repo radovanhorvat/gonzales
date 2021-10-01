@@ -15,6 +15,8 @@ typedef struct octnode_t {
 
 octnode* octnode_make(double w, double x, double y, double z);
 
+void octnode_free(octnode* nd);
+
 void octnode_print(octnode* nd);
 
 void octree_print(octnode* root);

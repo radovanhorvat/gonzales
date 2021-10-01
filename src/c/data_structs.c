@@ -85,6 +85,13 @@ double* accs_from_pcont(particle** pcont, int n) {
 	return accs;
 }
 
+void pcont_free(particle** pcont, int n) {
+    for (int i = 0; i < n; i++) {
+        free(pcont[i]);
+    }
+    free(pcont);
+}
+
 
 /* ---------------------------------
 	params functions

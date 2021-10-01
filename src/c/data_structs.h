@@ -28,6 +28,8 @@ particle** make_from_arrays(int n, double* points, double* masses);
 
 double* accs_from_pcont(particle** pcont, int n);
 
+void pcont_free(particle** pcont, int n);
+
 
 /* ---------------------------------
 	params
