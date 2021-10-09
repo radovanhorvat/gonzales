@@ -23,7 +23,7 @@ cdef _calculate_accs_pp(DTYPE_t [:, :] r, DTYPE_t[:] m, double G, double eps):
 	cdef int n_threads = openmp.omp_get_max_threads()
 	cdef int start_ind, stop_ind
 	cdef int chunk_size = int(n / n_threads)
-	cdef DTYPE_t [:, :, :] temp = np.zeros([n, 6, k])
+	cdef DTYPE_t [:, :, :] temp = np.zeros([n, n_threads, k])
 
 	for p in prange(n_threads, nogil=True):
 		start_ind = p * chunk_size
